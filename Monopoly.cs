@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace Monopoly
 {
@@ -20,7 +19,6 @@ namespace Monopoly
             new Quartal("Старая дорога", ConsoleColor.Yellow, 60, 2, 4, 10, 30, 90, 160, 250, 50, 30),
             new Quartal(1),
             new Quartal("Главная дорога", ConsoleColor.Yellow, 60, 4, 8, 20, 60, 180, 320, 450, 50, 30),
-            /// Налог 10% или 200
             new Quartal(8),
             new Quartal("Западный морской порт", 200, 25, 50, 100, 200, 100),
             new Quartal("Аквапарк", ConsoleColor.DarkYellow, 100, 6, 12, 30, 90, 270, 400, 550, 50, 50),
@@ -59,9 +57,171 @@ namespace Monopoly
             new Quartal("Гостиничный комплекс", ConsoleColor.Cyan, 400, 22, 44, 110, 330, 800, 975, 1150, 150, 130),
         };
         static public readonly Random rnd = new Random();
+        //13 символов должно помещаться на ячейке поля
         static public void Print()
         {
-
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.WriteLine("╔═════════════╦═════════════╦═════════════╦═════════════╦═════════════╦═════════════╦═════════════╦═════════════╦═════════════╦═════════════╦═════════════╗");
+            Console.Write("║");
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.Write("    СТАРТ    ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║");
+            Console.BackgroundColor = ConsoleColor.Yellow;
+            Console.Write("             ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║");
+            Console.BackgroundColor = ConsoleColor.Yellow;
+            Console.Write("             ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║");
+            Console.BackgroundColor = ConsoleColor.Yellow;
+            Console.Write("             ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║");
+            Console.BackgroundColor = ConsoleColor.Gray;
+            Console.Write("    Налог    ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║");
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.Write("             ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║");
+            Console.BackgroundColor = ConsoleColor.DarkYellow;
+            Console.Write("             ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║");
+            Console.BackgroundColor = ConsoleColor.Magenta;
+            Console.Write("             ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║");
+            Console.BackgroundColor = ConsoleColor.DarkYellow;
+            Console.Write("             ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║");
+            Console.BackgroundColor = ConsoleColor.DarkYellow;
+            Console.Write("             ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║");
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.Write("  Посетитель ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.WriteLine("║");
+            Console.Write("║");
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.Write("             ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║Старая дорога║");
+            Console.BackgroundColor = ConsoleColor.Yellow;
+            Console.Write("             ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║Главное шоссе║");
+            Console.BackgroundColor = ConsoleColor.Gray;
+            Console.Write("   с дохода  ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║  Западный   ║  Аквапарк   ║");
+            Console.BackgroundColor = ConsoleColor.Magenta;
+            Console.Write("             ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║  Городской  ║ Горнолыжный ║");
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.Write("             ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.WriteLine("║");
+            Console.Write("║");
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.Write("    ─────>   ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║             ║");
+            Console.BackgroundColor = ConsoleColor.Yellow;
+            Console.Write("    КАЗНА    ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║             ║");
+            Console.BackgroundColor = ConsoleColor.Gray;
+            Console.Write("Заплатите 10%");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║ морской порт║             ║");
+            Console.BackgroundColor = ConsoleColor.Magenta;
+            Console.Write("     ШАНС    ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║     парк    ║    курорт   ║");
+            Console.BackgroundColor = ConsoleColor.DarkGray;
+            Console.Write("   ТЮРЬМА    ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.WriteLine("║");
+            Console.Write("║");
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.Write("Получите 200$");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║     60$     ║");
+            Console.BackgroundColor = ConsoleColor.Yellow;
+            Console.Write("             ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║     60$     ║");
+            Console.BackgroundColor = ConsoleColor.Gray;
+            Console.Write("   или 200$  ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║     200$    ║    100$     ║");
+            Console.BackgroundColor = ConsoleColor.Magenta;
+            Console.Write("             ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.Write("║     100$    ║     120$    ║");
+            Console.BackgroundColor = ConsoleColor.DarkGray;
+            Console.Write("             ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.WriteLine("║");
+            Console.WriteLine("╠═════════════╬═════════════╩═════════════╩═════════════╩═════════════╩═════════════╩═════════════╩═════════════╩═════════════╩═════════════╬═════════════╣");
+            Console.WriteLine("║             ║                                                                                                                             ║             ║");
+            Console.WriteLine("║ Гостиничный ║                                                                                                                             ║   Спальный  ║");
+            Console.WriteLine("║   комплекс  ║           ???????????????                                                                                                   ║    район    ║");
+            Console.WriteLine("║     400$    ║           ?╔═══════════╗?                                                                                                   ║     140$    ║");
+            Console.WriteLine("╠═════════════╣           ?║           ║?                                                                                                   ╠═════════════╣");
+            Console.WriteLine("║   Дорогая   ║           ?║   КАЗНА   ║?                                                                                                   ║             ║");
+            Console.WriteLine("║   покупка   ║           ?║           ║?                                                                                                   ║Электрическая║");
+            Console.WriteLine("║  Заплатите  ║           ?╚═══════════╝?                                                                                                   ║   компания  ║");
+            Console.WriteLine("║     100$    ║           ???????????????                                                                                                   ║     150$    ║");
+            Console.WriteLine("╠═════════════╣                                                                                                                             ╠═════════════╣");
+            Console.WriteLine("║             ║                                                                                                                             ║             ║");
+            Console.WriteLine("║  Курортная  ║                                                                                                                             ║   Деловой   ║");
+            Console.WriteLine("║    зона     ║                                                                                                                             ║   квартал   ║");
+            Console.WriteLine("║    350$     ║                                                                                                                             ║     140$    ║");
+            Console.WriteLine("╠═════════════╣                                                                                                                             ╠═════════════╣");
+            Console.WriteLine("║             ║                __    __     ______     __   __     ______     ______   ______     __         __  __                         ║             ║");
+            Console.WriteLine("║             ║               /\\ \"-./  \\   /\\  __ \\   /\\ \"-.\\ \\   /\\  __ \\   /\\  == \\ /\\  __ \\   /\\ \\       /\\ \\_\\ \\                        ║   Торговая  ║");
+            Console.WriteLine("║    ШАНС     ║               \\ \\ \\-./\\ \\  \\ \\ \\/\\ \\  \\ \\ \\-.  \\  \\ \\ \\/\\ \\  \\ \\  _-/ \\ \\ \\/\\ \\  \\ \\ \\____  \\ \\____ \\                       ║    площадь  ║");
+            Console.WriteLine("║             ║                \\ \\_\\ \\ \\_\\  \\ \\_____\\  \\ \\_\\\\\"\\_\\  \\ \\_____\\  \\ \\_\\    \\ \\_____\\  \\ \\_____\\  \\/\\_____\\                      ║     160$    ║");
+            Console.WriteLine("╠═════════════╣                 \\/_/  \\/_/   \\/_____/   \\/_/ \\/_/   \\/_____/   \\/_/     \\/_____/   \\/_____/   \\/_____/                      ╠═════════════╣");
+            Console.WriteLine("║             ║                                                                                                                             ║             ║");
+            Console.WriteLine("║    Южный    ║                                                                                                                             ║  Северный   ║");
+            Console.WriteLine("║ морской порт║                                                                                                                             ║ морской порт║");
+            Console.WriteLine("║     200$    ║                                                                                                                             ║     200$    ║");
+            Console.WriteLine("╠═════════════╣                                                                                                                             ╠═════════════╣");
+            Console.WriteLine("║             ║                                                                                                                             ║             ║");
+            Console.WriteLine("║ Авиакомпания║                                                                                                                             ║    Улица    ║");
+            Console.WriteLine("║             ║                                                                                                                             ║   Пушкина   ║");
+            Console.WriteLine("║     320$    ║                                                                                                                             ║     180$    ║");
+            Console.WriteLine("╠═════════════╣                                                                                                                             ╠═════════════╣");
+            Console.WriteLine("║             ║                                                                                                                             ║             ║");
+            Console.WriteLine("║             ║                                                                                                                             ║             ║");
+            Console.WriteLine("║    КАЗНА    ║                                                                                                                             ║    КАЗНА    ║");
+            Console.WriteLine("║             ║                                                                                                                             ║             ║");
+            Console.WriteLine("╠═════════════╣                                                                                                                             ╠═════════════╣");
+            Console.WriteLine("║             ║                                                                                                     ???????????????         ║             ║");
+            Console.WriteLine("║   Железная  ║                                                                                                     ?╔═══════════╗?         ║   Проспект  ║");
+            Console.WriteLine("║    дорога   ║                                                                                                     ?║           ║?         ║     Мира    ║");
+            Console.WriteLine("║     300$    ║                                                                                                     ?║    ШАНС   ║?         ║     180$    ║");
+            Console.WriteLine("╠═════════════╣                                                                                                     ?║           ║?         ╠═════════════╣");
+            Console.WriteLine("║             ║                                                                                                     ?╚═══════════╝?         ║             ║");
+            Console.WriteLine("║   Морские   ║                                                                                                     ???????????????         ║   Проспект  ║");
+            Console.WriteLine("║  перевозки  ║                                                                                                                             ║    Победы   ║");
+            Console.WriteLine("║     300$    ║                                                                                                                             ║     200$    ║");
+            Console.WriteLine("╠═════════════╬═════════════╦═════════════╦═════════════╦═════════════╦═════════════╦═════════════╦═════════════╦═════════════╦═════════════╬═════════════╣");
+            Console.WriteLine("║             ║             ║             ║             ║             ║             ║             ║             ║             ║             ║      P      ║");
+            Console.WriteLine("║      Вы     ║Сотовая связь║Водопроводная║   Интернет  ║  Компьютеры ║  Восточный  ║   Ресторан  ║    Ночной   ║             ║     Бар     ║             ║");
+            Console.WriteLine("║ арестованы! ║             ║   станция   ║             ║             ║ морской порт║             ║     клуб    ║     ШАНС    ║             ║  Бесплатная ║");
+            Console.WriteLine("║             ║     280$    ║     200$    ║     260$    ║     260$    ║     200$    ║     240$    ║     220$    ║             ║     220$    ║   парковка  ║");
+            Console.WriteLine("╚═════════════╩═════════════╩═════════════╩═════════════╩═════════════╩═════════════╩═════════════╩═════════════╩═════════════╩═════════════╩═════════════╝");
         }
         static void Treasury(int player)
         {
@@ -191,7 +351,8 @@ namespace Monopoly
         static void Main()
         {
             Console.Title = "Монополия";
-            while (true)
+            Console.SetWindowSize(220, 60);
+            /*while (true)
             {
                 Console.Write("Введите количество игроков: ");
                 try
@@ -297,7 +458,8 @@ namespace Monopoly
             }
             int dice1, dice2;
             remaining = players;
-            int doubles = 0;
+            int doubles = 0;*/
+            Print();
             /*while (remaining > 1)
             {
                 for (int i = 0; i < players; i++)
