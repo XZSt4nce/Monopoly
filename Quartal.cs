@@ -5,21 +5,23 @@ namespace Monopoly
     public class Quartal
     {
         public readonly string name;
-        public readonly ConsoleColor color;
+        public readonly string color;
         public int owner;
+        public int visitors;
+        /// <summary>
+        /// Специальное обозначение улицы
+        /// 0 – старт
+        /// 1 – казна
+        /// 2 – шанс
+        /// 3 – тюрьма
+        /// 4 – парковка
+        /// 5 – арест
+        /// 6 – порт
+        /// 7 – коммунальное предприятие
+        /// 8 – налог
+        /// 9 – дорогая покупка
+        /// </summary>
         public readonly int special;
-        /* 
-         * 0 – start
-         * 1 – treasury
-         * 2 – chance
-         * 3 – jail
-         * 4 – parking
-         * 5 – arrest
-         * 6 – port
-         * 7 – municipal
-         * 8 – tax
-         * 9 – purchase
-         */
         public readonly int cost;
         public readonly int noMonopolyRent;
         public readonly int monopolyRent;
@@ -29,14 +31,22 @@ namespace Monopoly
         public readonly int house4Rent;
         public readonly int hotelRent;
         public readonly int houseCost;
+        /// <summary>
+        /// Сумма денег, полученных при заложении улицы
+        /// </summary>
         public readonly int pledge;
-        public Quartal (string _name, ConsoleColor _color, int _cost, int _noMonopolyRent, int _monopolyRent, int _house1Rent, int _house2Rent,
+        /// <summary>
+        /// Является ли улица заложенной
+        /// </summary>
+        public bool isMantaged;
+        public Quartal (string _name, string _color, int _cost, int _noMonopolyRent, int _monopolyRent, int _house1Rent, int _house2Rent,
                        int _house3Rent, int _house4Rent, int _hotelRent, int _houseCost, int _pledge)
         {
             name = _name;
             special = -1;
             color = _color;
             owner = -1;
+            visitors = 0;
             cost = _cost;
             noMonopolyRent = _noMonopolyRent;
             monopolyRent = _monopolyRent;
@@ -47,13 +57,14 @@ namespace Monopoly
             hotelRent = _hotelRent;
             houseCost = _houseCost;
             pledge = _pledge;
+            isMantaged = false;
         }
         public Quartal(string _name, int _cost, int _house1Rent, int _house2Rent,
                        int _house3Rent, int _house4Rent, int _pledge)
         {
             name = _name;
             special = 6;
-            color = ConsoleColor.Black;
+            color = "Black";
             owner = -1;
             cost = _cost;
             house1Rent = _house1Rent;
@@ -61,16 +72,22 @@ namespace Monopoly
             house3Rent = _house3Rent;
             house4Rent = _house4Rent;
             pledge = _pledge;
+            visitors = 0;
+            isMantaged = false;
         }
         public Quartal (int _special)
         {
             special = _special;
+            visitors = 0;
         }
-        public Quartal(string _name, int _cost)
+        public Quartal(string _name, int _cost, int _pledge)
         {
             name = _name;
             cost = _cost;
+            pledge = _pledge;
+            isMantaged = false;
             special = 7;
+            visitors = 0;
         }
     }
 }
