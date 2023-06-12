@@ -1132,6 +1132,63 @@ namespace Monopoly
         }
 
         /// <summary>
+        /// Предложение обмена от игрока1 к игроку2
+        /// </summary>
+        /// <param name="player1">Игрок1</param>
+        /// <param name="player2">Игрок2</param>
+        /// <returns></returns>
+        static public int Trade(Player player1, Player player2)
+        {
+            Console.SetCursorPosition(165, 51);
+            Console.Write("║                             Обмен                             ║");
+            Console.SetCursorPosition(165, 53);
+            Console.Write("║ AD – Выбрать игрока           Enter – Предложить игроку обмен ║");
+            Console.SetCursorPosition(165, 54);
+            if (musicMuted)
+            {
+                Console.Write("║ Backspace – Отменить обмен                M – Включить музыку ║");
+            }
+            else
+            {
+                Console.Write("║ Backspace – Отменить обмен               M – Заглушить музыку ║");
+            }
+            Console.SetCursorPosition(165, 55);
+            Console.Write("                                                                 ");
+            // Todo:
+            // посередине карты отображение что за что обменивается + ниже место для отображения карточек с регулятором денег;
+            // добавление строк, если не хватает места на название улиц, учитывать запятые.
+            while (true)
+            {
+                switch (Console.ReadKey(true).Key)
+                {
+                    case ConsoleKey.A:
+                        break;
+                    case ConsoleKey.D:
+                        break;
+                    case ConsoleKey.Enter:
+                        break;
+                    case ConsoleKey.M:
+                        Console.SetCursorPosition(165, 54);
+                        if (musicMuted)
+                        {
+                            musicMuted = false;
+                            musicPlayer.PlayLooping();
+                            Console.Write("║ Backspace – Отменить обмен               M – Заглушить музыку ║");
+                        }
+                        else
+                        {
+                            musicMuted = true;
+                            musicPlayer.Stop();
+                            Console.Write("║ Backspace – Отменить обмен                M – Включить музыку ║");
+                        }
+                        break;
+                    case ConsoleKey.Backspace:
+                        return 0;
+                }
+            }
+        }
+
+        /// <summary>
         /// Вывод меню действий
         /// </summary>
         /// <param name="player">Номер ходящего игрока</param>
@@ -1148,11 +1205,11 @@ namespace Monopoly
             Console.SetCursorPosition(165, 54);
             if (musicMuted)
             {
-                Console.Write("║                      M – Включить музыку                      ║");
+                Console.Write("║ T – Предложить обмен                      M – Включить музыку ║");
             }
             else 
             {
-                Console.Write("║                      M – Заглушить музыку                     ║");
+                Console.Write("║ T – Предложить обмен                     M – Заглушить музыку ║");
             }
             Console.SetCursorPosition(165, 55);
             Console.Write("╚═══════════════════════════════════════════════════════════════╝");
@@ -1278,6 +1335,32 @@ namespace Monopoly
                                 else if (quartal.special == 9)
                                 {
                                     player.balance -= 100;
+                                    // Todo: Написать о том, что игрок совершает дорогую покупку
+                                    Console.SetCursorPosition(165, 50);
+                                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                                    Console.SetCursorPosition(165, 51);
+                                    Console.Write("║ В этот прекрасный день стоит пройтись по магазинам. С вас 100$║");
+                                    Console.SetCursorPosition(165, 52);
+                                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                                    Console.SetCursorPosition(165, 53);
+                                    Console.Write("║ ");
+                                    if (player.balance < 100) Console.ForegroundColor = ConsoleColor.DarkGray;
+                                    Console.Write("Enter – Заплатить 100$");
+                                    Console.ForegroundColor = ConsoleColor.Black;
+                                    Console.Write("          Tab – Посмотреть недвижимость ║");
+                                    Console.SetCursorPosition(165, 54);
+                                    if (musicMuted)
+                                    {
+                                        Console.Write("║ T – Предложить обмен                      M – Включить музыку ║");
+                                    }
+                                    else
+                                    {
+                                        Console.Write("║ T – Предложить обмен                     M – Заглушить музыку ║");
+                                    }
+                                    Console.SetCursorPosition(165, 55);
+                                    Console.Write("║                 End – Объявить себя банкротом                 ║");
+                                    Console.SetCursorPosition(165, 56);
+                                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
                                 }
                                 else
                                 {
@@ -1297,13 +1380,13 @@ namespace Monopoly
                         {
                             musicMuted = false;
                             musicPlayer.PlayLooping();
-                            Console.Write("║                      M – Заглушить музыку                     ║");
+                            Console.Write("║ T – Предложить обмен                     M – Заглушить музыку ║");
                         }
                         else
                         {
                             musicMuted = true;
                             musicPlayer.Stop();
-                            Console.Write("║                      M – Включить музыку                      ║");
+                            Console.Write("║ T – Предложить обмен                      M – Включить музыку ║");
                         }
                         break;
                 }

@@ -9,17 +9,17 @@ namespace Monopoly
         public Player owner;
         public int visitors;
         /// <summary>
-        /// Специальное обозначение улицы
-        /// 0 – старт
-        /// 1 – казна
-        /// 2 – шанс
-        /// 3 – тюрьма
-        /// 4 – парковка
-        /// 5 – арест
-        /// 6 – порт
-        /// 7 – коммунальное предприятие
-        /// 8 – налог
-        /// 9 – дорогая покупка
+        /// Специальное обозначение улицы.
+        /// 0 – старт;
+        /// 1 – казна;
+        /// 2 – шанс;
+        /// 3 – тюрьма;
+        /// 4 – парковка;
+        /// 5 – арест;
+        /// 6 – порт;
+        /// 7 – коммунальное предприятие;
+        /// 8 – налог;
+        /// 9 – дорогая покупка.
         /// </summary>
         public readonly int special;
         public readonly int cost;
@@ -31,6 +31,16 @@ namespace Monopoly
         public readonly int house4Rent;
         public readonly int hotelRent;
         public readonly int houseCost;
+        /// <summary>
+        /// Уровень прокачки.
+        /// 0 – без домов;
+        /// 1 – 1 дом;
+        /// 2 – 2 дома;
+        /// 3 – 3 дома;
+        /// 4 – 4 дома;
+        /// 5  отель.
+        /// </summary>
+        public int level;
         /// <summary>
         /// Сумма денег, полученных при заложении улицы
         /// </summary>
@@ -47,6 +57,7 @@ namespace Monopoly
             color = _color;
             owner = null;
             visitors = 0;
+            level = 0;
             cost = _cost;
             noMonopolyRent = _noMonopolyRent;
             monopolyRent = _monopolyRent;
