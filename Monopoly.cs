@@ -13,6 +13,11 @@ namespace Monopoly
         static public int remaining;
         static public int[] treasuries = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
         static public int[] chances = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+        static bool musicMuted = false;
+        static readonly int sleep = 300;
+        static int dice1, dice2;
+        static int doubles = 0;
+        static readonly SoundPlayer musicPlayer = new SoundPlayer(Resources.music);
         static public Player[] players;
         static public Quartal[] quartals = new Quartal[40]
         {
@@ -203,8 +208,8 @@ namespace Monopoly
         /// <param name="dice2">Значение второго кубика от 1 до 6</param>
         static public void PrintDices(int dice1, int dice2, int doubles)
         {
-            int column = 165;
-            int row = 53;
+            int column = 187;
+            int row = 50;
             if (doubles == 1)
             {
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
@@ -818,11 +823,13 @@ namespace Monopoly
         {
             int addWidth, addHeight;
             ConsoleColor background;
-            for (int i = 0; i < players.Length; i++)
+            Player player;
+            for (int i = 0; i < playersCount; i++)
             {
+                player = players[i];
                 addWidth = 34 * (i % 2);
                 addHeight = 12 * (i / 2);
-                if (players[i].bankrupt) background = ConsoleColor.Gray;
+                if (player.bankrupt) background = ConsoleColor.Gray;
                 else background = ConsoleColor.White;
                 Console.SetCursorPosition(165 + addWidth, 2 + addHeight);
                 Console.BackgroundColor = background;
@@ -830,19 +837,20 @@ namespace Monopoly
                 Console.SetCursorPosition(165 + addWidth, 3 + addHeight);
                 Console.Write("║");
                 if (i == turn) Console.BackgroundColor = ConsoleColor.Yellow;
-                Console.Write($"{players[i].name} {players[i].piece}");
-                for (int j = 0; j < 25 - players[i].name.Length - Convert.ToString(players[i].balance).Length; j++)
+                if (player.canselled) Console.BackgroundColor = ConsoleColor.Gray;
+                Console.Write($"{player.name} {player.piece}");
+                for (int j = 0; j < 25 - player.name.Length - Convert.ToString(player.balance).Length; j++)
                 {
                     Console.Write(" ");
                 }
-                Console.Write($"{players[i].balance}$ ");
+                Console.Write($"{player.balance}$ ");
                 Console.BackgroundColor = background;
                 Console.Write("║");
                 Console.SetCursorPosition(165 + addWidth, 4 + addHeight);
                 Console.Write("╠═════════════════════════════╣");
                 Console.SetCursorPosition(165 + addWidth, 5 + addHeight);
-                Console.Write($"║ Карты освобождения: {players[i].liberation}");
-                for (int j = 0; j < 8 - Convert.ToString(players[i].liberation).Length; j++)
+                Console.Write($"║ Карты освобождения: {player.liberation}");
+                for (int j = 0; j < 8 - Convert.ToString(player.liberation).Length; j++)
                 {
                     Console.Write(" ");
                 }
@@ -854,41 +862,41 @@ namespace Monopoly
                 Console.BackgroundColor = ConsoleColor.Yellow;
                 Console.Write("Жёлтая");
                 Console.BackgroundColor = background;
-                Console.Write($" {players[i].yellow}/3 ");
+                Console.Write($" {player.yellow}/3 ");
                 Console.BackgroundColor = ConsoleColor.DarkYellow;
                 Console.Write("Тёмно-жёлтая");
                 Console.BackgroundColor = background;
-                Console.Write($" {players[i].darkYellow}/3 ║");
+                Console.Write($" {player.darkYellow}/3 ║");
                 Console.SetCursorPosition(165 + addWidth, 8 + addHeight);
                 Console.Write("║ ");
                 Console.BackgroundColor = ConsoleColor.Green;
                 Console.Write("Зелёная");
                 Console.BackgroundColor = background;
-                Console.Write($" {players[i].green}/3   ");
+                Console.Write($" {player.green}/3   ");
                 Console.BackgroundColor = ConsoleColor.Magenta;
                 Console.Write("Пурпурная");
                 Console.BackgroundColor = background;
-                Console.Write($" {players[i].magenta}/3 ║");
+                Console.Write($" {player.magenta}/3 ║");
                 Console.SetCursorPosition(165 + addWidth, 9 + addHeight);
                 Console.Write("║ ");
                 Console.BackgroundColor = ConsoleColor.Blue;
                 Console.Write("Синяя");
                 Console.BackgroundColor = background;
-                Console.Write($" {players[i].blue}/3 ");
+                Console.Write($" {player.blue}/3 ");
                 Console.BackgroundColor = ConsoleColor.DarkGreen;
                 Console.Write("Тёмно-зелёная");
                 Console.BackgroundColor = background;
-                Console.Write($" {players[i].darkGreen}/3 ║");
+                Console.Write($" {player.darkGreen}/3 ║");
                 Console.SetCursorPosition(165 + addWidth, 10 + addHeight);
                 Console.Write("║ ");
                 Console.BackgroundColor = ConsoleColor.Red;
                 Console.Write("Красная");
                 Console.BackgroundColor = background;
-                Console.Write($" {players[i].red}/3     ");
+                Console.Write($" {player.red}/3     ");
                 Console.BackgroundColor = ConsoleColor.Cyan;
                 Console.Write("Голубая");
                 Console.BackgroundColor = background;
-                Console.Write($" {players[i].cyan}/2 ║");
+                Console.Write($" {player.cyan}/2 ║");
                 Console.SetCursorPosition(165 + addWidth, 11 + addHeight);
                 Console.Write("║          ");
                 Console.BackgroundColor = ConsoleColor.Black;
@@ -896,7 +904,7 @@ namespace Monopoly
                 Console.Write("Чёрная");
                 Console.BackgroundColor = background;
                 Console.ForegroundColor = ConsoleColor.Black;
-                Console.Write($" {players[i].black}/4         ║");
+                Console.Write($" {player.black}/4         ║");
                 Console.SetCursorPosition(165 + addWidth, 12 + addHeight);
                 Console.Write("╚═════════════════════════════╝");
             }
@@ -1127,12 +1135,340 @@ namespace Monopoly
         /// Вывод меню действий
         /// </summary>
         /// <param name="player">Номер ходящего игрока</param>
-        static public void Menu(int player)
-        { //╬
+        static public int Menu(Player player)
+        {
             Console.SetCursorPosition(165, 50);
             Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+            Console.SetCursorPosition(165, 51);
             Console.Write("║                              МЕНЮ                             ║");
+            Console.SetCursorPosition(165, 52);
             Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+            Console.SetCursorPosition(165, 53);
+            Console.Write("║ Пробел – Бросить кубики         Tab – Посмотреть недвижимость ║");
+            Console.SetCursorPosition(165, 54);
+            if (musicMuted)
+            {
+                Console.Write("║                      M – Включить музыку                      ║");
+            }
+            else 
+            {
+                Console.Write("║                      M – Заглушить музыку                     ║");
+            }
+            Console.SetCursorPosition(165, 55);
+            Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+
+            bool doubled = false;
+            while (true)
+            {
+                switch (Console.ReadKey(true).Key)
+                {
+                    case ConsoleKey.Spacebar:
+                        Console.SetCursorPosition(165, 50);
+                        Console.Write("                                                                 ");
+                        Console.SetCursorPosition(165, 51);
+                        Console.Write("                                                                 ");
+                        Console.SetCursorPosition(165, 52);
+                        Console.Write("                                                                 ");
+                        Console.SetCursorPosition(165, 53);
+                        Console.Write("                                                                 ");
+                        Console.SetCursorPosition(165, 54);
+                        Console.Write("                                                                 ");
+                        Console.SetCursorPosition(165, 55);
+                        Console.Write("                                                                 ");
+                        if (player.prisoned)
+                        {
+                            // ToDo
+                        }
+                        else
+                        {
+                            dice1 = rnd.Next(1, 7);
+                            dice2 = rnd.Next(1, 7);
+                            int oldPosition = player.position;
+                            int newPosition = (oldPosition + dice1 + dice2) % 40;
+                            if (dice1 == dice2)
+                            {
+                                doubles++;
+                                if (doubles == 3)
+                                {
+                                    player.position = 10;
+                                    player.prisoned = true;
+                                    quartals[10].visitors++;
+                                    PrintPieces(30, 10, player.piece);
+                                    quartals[30].visitors--;
+                                    doubles = 0;
+                                    return 0;
+                                }
+                                else
+                                {
+                                    doubled = true;
+                                }
+                            }
+                            else doubles = 0;
+                            PrintDices(dice1, dice2, doubles);
+                            if (!player.prisoned)
+                            {
+                                if (oldPosition > newPosition)
+                                {
+                                    for (int j = oldPosition; j < 40; j++)
+                                    {
+                                        quartals[(j + 1) % 40].visitors++;
+                                        PrintPieces(j, (j + 1) % 40, player.piece);
+                                        quartals[j].visitors--;
+                                        Thread.Sleep(sleep);
+                                    }
+                                    for (int j = 0; j < newPosition; j++)
+                                    {
+                                        quartals[j + 1].visitors++;
+                                        PrintPieces(j, j + 1, player.piece);
+                                        quartals[j].visitors--;
+                                        Thread.Sleep(sleep);
+                                    }
+                                }
+                                else
+                                {
+                                    for (int j = oldPosition; j < newPosition; j++)
+                                    {
+                                        quartals[j + 1].visitors++;
+                                        PrintPieces(j, j + 1, player.piece);
+                                        quartals[j].visitors--;
+                                        Thread.Sleep(sleep);
+                                    }
+                                }
+                                Quartal quartal = quartals[newPosition];
+                                quartal.visitors++;
+                                player.position = newPosition;
+                                if (quartal.special == 1)
+                                {
+                                    Treasury(player);
+                                }
+                                else if (quartal.special == 2)
+                                {
+                                    Chance(player);
+                                }
+                                else if (quartal.special == 3)
+                                {
+                                    // Todo: Написать о том, что игрок пришёл, как посетитель
+                                }
+                                else if (quartal.special == 4)
+                                {
+                                    // Todo: Написать о том, что игрок пришёл на парковку
+                                }
+                                else if (quartal.special == 5)
+                                {
+                                    player.position = 10;
+                                    player.prisoned = true;
+                                    quartals[10].visitors++;
+                                    PrintPieces(30, 10, player.piece);
+                                    quartals[30].visitors--;
+                                    doubles = 0;
+                                    return 0;
+                                }
+                                else if (quartal.special == 6)
+                                {
+                                    // Todo: Купить порт или выставить на аукцион
+                                }
+                                else if (quartal.special == 7)
+                                {
+                                    // Todo: Купить коммунальное предприятие или выставить на аукцион
+                                }
+                                else if (quartal.special == 8)
+                                {
+                                    // Todo: Заплатить 10% от нынешнего баланса или 200$
+                                }
+                                else if (quartal.special == 9)
+                                {
+                                    player.balance -= 100;
+                                }
+                                else
+                                {
+                                    // Todo: Купить улицу или выставить на аукцион
+                                }
+                                if (oldPosition > newPosition) player.balance += 200;
+                                if (doubled) return 1;
+                                return 0;
+                            }
+                        }
+                        break;
+                    case ConsoleKey.Tab:
+                        break;
+                    case ConsoleKey.M:
+                        Console.SetCursorPosition(165, 54);
+                        if (musicMuted)
+                        {
+                            musicMuted = false;
+                            musicPlayer.PlayLooping();
+                            Console.Write("║                      M – Заглушить музыку                     ║");
+                        }
+                        else
+                        {
+                            musicMuted = true;
+                            musicPlayer.Stop();
+                            Console.Write("║                      M – Включить музыку                      ║");
+                        }
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Покупка игроком конкретной улицы
+        /// </summary>
+        /// <param name="player">Покупатель, игрок</param>
+        /// <param name="quartal">Покупаемая улица</param>
+        static public void Purchase(Player player, Quartal quartal)
+        {
+            player.balance -= quartal.cost;
+            player.property = player.property.Append(quartal).ToArray();
+            quartal.owner = player;
+        }
+
+        /// <summary>
+        /// Выставление улицы на аукцион. Игроки по очереди повышают ставки, начиная со стоимости улицы. Те, у кого нет денег на ставку выше, аннулируют ставку автоматически
+        /// </summary>
+        /// <param name="quartal">Выставляемая улица</param>
+        static public void Auction(Quartal quartal)
+        {
+            int spaces, left, right;
+            int bid = quartal.cost;
+            int participants = playersCount;
+            Player buyer = null;
+            for (int i = 0; i < playersCount; i++)
+            {
+                if (players[i].balance < bid) players[i].canselled = true;
+            }
+            do
+            {
+                for (int i = 0; i < playersCount; i++)
+                {
+                    Player participant = players[i];
+                    if (participant.canselled) continue;
+                    Console.SetCursorPosition(69, 26);
+                    Console.Write("╔══════════════════════╗");
+                    Console.SetCursorPosition(69, 27);
+                    spaces = 22 - quartal.name.Length;
+                    left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
+                    right = Convert.ToInt32(Math.Floor(spaces / 2.0));
+                    Console.Write("║");
+                    for (int j = 0; j < left; j++) Console.Write(" ");
+                    Console.Write(quartal.name);
+                    for (int j = 0; j < right; j++) Console.Write(" ");
+                    Console.Write("║");
+                    Console.SetCursorPosition(69, 28);
+                    Console.Write("╠══════════════════════╣");
+                    Console.SetCursorPosition(69, 29);
+                    Console.Write("║ ");
+                    if (quartal.cost < 100) Console.Write(" ");
+                    Console.Write("Начальная цена: ");
+                    if (bid > quartal.cost) Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write($"{quartal.cost}$");
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.Write(" ║");
+                    PrintPlayers(i);
+                    Console.SetCursorPosition(69, 30);
+                    Console.Write("║");
+                    if (buyer == null)
+                    {
+                        Console.Write("                      ");
+                    }
+                    else
+                    {
+                        spaces = 22 - buyer.name.Length;
+                        left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
+                        right = Convert.ToInt32(Math.Floor(spaces / 2.0));
+                        for (int j = 0; j < left; j++) Console.Write(" ");
+                        Console.Write(buyer.name);
+                        for (int j = 0; j < right; j++) Console.Write(" ");
+                    }
+                    Console.Write("║");
+                    Console.SetCursorPosition(69, 31);
+                    Console.Write("║ Ставка: ");
+                    for (int j = 0; j < 11 - Convert.ToString(bid).Length; j++) Console.Write(" ");
+                    Console.Write($"{bid}$ ║");
+                    Console.SetCursorPosition(69, 32);
+                    Console.Write("╚══════════════════════╝");
+
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║                              МЕНЮ                             ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 53);
+                    Console.Write("║ ");
+                    if (participant.balance >= 1) Console.Write("Tab – Поставить 1$");
+                    else Console.Write("                  ");
+                    if (participant.balance >= 10) Console.Write("                      Enter – Поставить 10$ ║");
+                    else Console.Write("                                            ║");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("║ ");
+                    if (participant.balance >= 100) Console.Write("Пробел – Поставить 100$");
+                    else Console.Write("                       ");
+                    Console.Write("       Backspace – Аннулировать ставку ║");
+                    Console.SetCursorPosition(165, 55);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    while (true)
+                    {
+                        switch (Console.ReadKey(true).Key)
+                        {
+                            case ConsoleKey.Tab:
+                                if (participant.balance >= 1)
+                                {
+                                    bid++;
+                                    buyer = participant;
+                                    goto End;
+                                }
+                                break;
+                            case ConsoleKey.Enter:
+                                if (participant.balance >= 10)
+                                {
+                                    bid += 10;
+                                    buyer = participant;
+                                    goto End;
+                                }
+                                break;
+                            case ConsoleKey.Spacebar:
+                                if (participant.balance >= 100)
+                                {
+                                    bid += 100;
+                                    buyer = participant;
+                                    goto End;
+                                }
+                                break;
+                            case ConsoleKey.Backspace:
+                                participants--;
+                                participant.canselled = true;
+                                goto End;
+                        }
+                    }
+                    End:;
+                }
+            } while (participants > 1);
+
+            quartal.owner = buyer;
+            buyer.property = buyer.property.Append(quartal).ToArray();
+
+            for (int i = 0; i < playersCount; i++)
+            {
+                players[i].canselled = false;
+            }
+            Console.SetCursorPosition(69, 26);
+            Console.Write("                        ");
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.SetCursorPosition(69, 27);
+            Console.Write("     ______     ______  ");
+            Console.SetCursorPosition(69, 28);
+            Console.Write("\\   /\\  __ \\   /\\  == \\ ");
+            Console.SetCursorPosition(69, 29);
+            Console.Write(" \\  \\ \\ \\/\\ \\  \\ \\  _-/ ");
+            Console.SetCursorPosition(69, 30);
+            Console.Write("\\_\\  \\ \\_____\\  \\ \\_\\   ");
+            Console.SetCursorPosition(69, 31);
+            Console.Write("/_/   \\/_____/   \\/_/   ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.SetCursorPosition(69, 32);
+            Console.Write("                        ");
         }
 
         /// <summary>
@@ -1222,7 +1558,7 @@ namespace Monopoly
             {
                 // SetCursorPosition + WriteLine
                 case 0:
-                    player.balance -= 40 * player.houses + 115 * player.hotels;
+                    player.balance -= 40 * player.housesCount + 115 * player.hotelsCount;
                     break;
                 case 1:
                     player.position = 10;
@@ -1270,7 +1606,7 @@ namespace Monopoly
                     player.position = 24;
                     break;
                 case 14:
-                    player.balance -= 25 * player.houses + 100 * player.hotels;
+                    player.balance -= 25 * player.housesCount + 100 * player.hotelsCount;
                     break;
                 case 15:
                     player.balance -= 150;
@@ -1286,12 +1622,7 @@ namespace Monopoly
             Console.SetBufferSize(Console.LargestWindowWidth, 110);
 
             // Music
-            SoundPlayer sndPlayer = new SoundPlayer(Resources.music);
-            try
-            {
-                sndPlayer.PlayLooping();
-            }
-            catch (System.IO.FileNotFoundException) { }
+            musicPlayer.PlayLooping();
 
             // Shuffle
             int cards = 16;
@@ -1458,86 +1789,14 @@ namespace Monopoly
 
             // Game
             PrintRoadmap();
-            int sleep = 300;
-            int doubles = 0;
             while (remaining > 1)
             {
                 for (int i = 0; i < playersCount; i++)
                 {
                     if (players[i].bankrupt) continue;
                     PrintPlayers(i);
-                    Menu(i);
-                    if (players[i].prisoned)
-                    {
-
-                    }
-                    else
-                    {
-                        dice1 = rnd.Next(1, 7);
-                        dice2 = rnd.Next(1, 7);
-                        int newPosition = (players[i].position + dice1 + dice2) % 40;
-                        if (dice1 == dice2)
-                        {
-                            doubles++;
-                            if (doubles == 3)
-                            {
-                                players[i].position = 10;
-                                players[i].prisoned = true;
-                                quartals[30].visitors++;
-                                PrintPieces(30, 10, players[i].piece);
-                                quartals[10].visitors--;
-                                doubles = 0;
-                            }
-                            else
-                            {
-                                i--;
-                            }
-                        }
-                        else doubles = 0;
-                        PrintDices(dice1, dice2, doubles);
-                        if (!players[i].prisoned)
-                        {
-                            if (players[i].position > newPosition)
-                            {
-                                for (int j = players[i].position; j < 40; j++)
-                                {
-                                    quartals[(j + 1) % 40].visitors++;
-                                    PrintPieces(j, (j + 1) % 40, players[i].piece);
-                                    quartals[j].visitors--;
-                                    Thread.Sleep(sleep);
-                                }
-                                for (int j = 0; j < newPosition; j++)
-                                {
-                                    quartals[j + 1].visitors++;
-                                    PrintPieces(j, j + 1, players[i].piece);
-                                    quartals[j].visitors--;
-                                    Thread.Sleep(sleep);
-                                }
-                            }
-                            else
-                            {
-                                for (int j = players[i].position; j < newPosition; j++)
-                                {
-                                    quartals[j + 1].visitors++;
-                                    PrintPieces(j, j + 1, players[i].piece);
-                                    quartals[j].visitors--;
-                                    Thread.Sleep(sleep);
-                                }
-                            }
-                            quartals[newPosition].visitors++;
-                            players[i].position = newPosition;
-                            if (newPosition == 30)
-                            {
-                                players[i].position = 10;
-                                players[i].prisoned = true;
-                                quartals[30].visitors++;
-                                PrintPieces(30, 10, players[i].piece);
-                                quartals[10].visitors--;
-                                doubles = 0;
-                            }
-                        }
-                    }
-                    Console.ReadKey(true);
+                    i -= Menu(players[i]);
+                    Auction(quartals[1]);
                 }
             }
         }

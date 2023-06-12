@@ -6,7 +6,7 @@ namespace Monopoly
     {
         public readonly string name;
         public readonly string color;
-        public int owner;
+        public Player owner;
         public int visitors;
         /// <summary>
         /// Специальное обозначение улицы
@@ -45,7 +45,7 @@ namespace Monopoly
             name = _name;
             special = -1;
             color = _color;
-            owner = -1;
+            owner = null;
             visitors = 0;
             cost = _cost;
             noMonopolyRent = _noMonopolyRent;
@@ -65,7 +65,7 @@ namespace Monopoly
             name = _name;
             special = 6;
             color = "Black";
-            owner = -1;
+            owner = null;
             cost = _cost;
             house1Rent = _house1Rent;
             house2Rent = _house2Rent;
