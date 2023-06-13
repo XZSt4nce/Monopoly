@@ -1,6 +1,5 @@
 ﻿using Monopoly.Properties;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Media;
 using System.Threading;
@@ -223,15 +222,17 @@ namespace Monopoly
                 Console.ForegroundColor = ConsoleColor.DarkRed;
             }
             Console.SetCursorPosition(column, row);
-            Console.WriteLine("┌───────┐   ┌───────┐");
+            Console.Write("┌───────┐   ┌───────┐");
             Console.SetCursorPosition(column, row + 1);
-            Console.WriteLine("│       │   │       │");
+            Console.Write("│       │   │       │");
             Console.SetCursorPosition(column, row + 2);
-            Console.WriteLine("│       │   │       │");
+            Console.Write("│       │   │       │");
             Console.SetCursorPosition(column, row + 3);
-            Console.WriteLine("│       │   │       │");
+            Console.Write("│       │   │       │");
             Console.SetCursorPosition(column, row + 4);
-            Console.WriteLine("└───────┘   └───────┘");
+            Console.Write("└───────┘   └───────┘");
+            Console.SetCursorPosition(165, row + 5);
+            Console.Write("                                                                 ");
 
             switch (dice1)
             {
@@ -920,59 +921,93 @@ namespace Monopoly
         {
             int oldVisitors = quartals[oldPosition].visitors;
             int newVisitors = quartals[newPosition].visitors;
+            int prisonedVisitors = players.Where(player => player.prisoned).Count();
             int oldPiecesPtr = 0;
             int newPiecesPtr = 1;
+            int prisonerPiecesPtr = 0;
             char[] oldPieces = new char[oldVisitors];
             char[] newPieces = new char[newVisitors];
+            char[] prisonerPieces = new char[prisonedVisitors];
             newPieces[0] = _piece;
-            bool prisoned = false;
             for (int i = 0; i < playersCount; i++)
             {
-                if (players[i].position == oldPosition && players[i].piece != _piece) oldPieces[oldPiecesPtr++] = players[i].piece;
-                if (players[i].position == newPosition) newPieces[newPiecesPtr++] = players[i].piece;
-                if (players[i].piece == _piece) prisoned = players[i].prisoned;
+                if (players[i].position == oldPosition && players[i].piece != _piece && !players[i].prisoned) oldPieces[oldPiecesPtr++] = players[i].piece;
+                if (players[i].position == newPosition && players[i].piece != _piece && !players[i].prisoned) newPieces[newPiecesPtr++] = players[i].piece;
+                if (players[i].prisoned) prisonerPieces[prisonerPiecesPtr++] = players[i].piece;
             }
 
             int column, row;
             if (oldPosition <= 10)
             {
-
                 if (oldPosition == 0)
                 {
                     row = 3;
                     Console.BackgroundColor = ConsoleColor.DarkMagenta;
+                    for (int i = 0; i < oldVisitors; i++)
+                    {
+                        column = 7 + i;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(" ");
+                    }
+                    for (int i = 0; i < oldVisitors; i++)
+                    {
+                        column = 7 + i;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(oldPieces[i]);
+                    }
                 }
                 else if (oldPosition == 10)
                 {
-                    if (prisoned)
+                    row = 5;
+                    Console.BackgroundColor = ConsoleColor.Gray;
+                    for (int i = 0; i < prisonedVisitors; i++)
                     {
-                        row = 5;
-                        Console.BackgroundColor = ConsoleColor.Gray;
+                        column = 147 + i;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(" ");
                     }
-                    else
+                    for (int i = 0; i < prisonedVisitors; i++)
                     {
-                        row = 3;
-                        Console.BackgroundColor = ConsoleColor.DarkMagenta;
+                        column = 147 + i;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(prisonerPieces[i]);
+                    }
+                    row = 3;
+                    Console.BackgroundColor = ConsoleColor.DarkMagenta;
+                    for (int i = 0; i < oldVisitors; i++)
+                    {
+                        column = 147 + i;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(" ");
+                    }
+                    for (int i = 0; i < oldVisitors; i++)
+                    {
+                        column = 147 + i;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(oldPieces[i]);
                     }
                 }
-                else row = 0;
-                for (int i = 0; i < 8; i++)
+                else
                 {
-                    column = 7 + i + 14 * oldPosition;
-                    Console.SetCursorPosition(column, row);
-                    Console.Write(" ");
-                }
-                for (int i = 0; i < oldVisitors; i++)
-                {
-                    column = 7 + i + 14 * oldPosition;
-                    Console.SetCursorPosition(column, row);
-                    Console.Write(oldPieces[i]);
+                    row = 0;
+                    for (int i = 0; i < oldVisitors; i++)
+                    {
+                        column = 7 + i + 14 * oldPosition;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(" ");
+                    }
+                    for (int i = 0; i < oldVisitors; i++)
+                    {
+                        column = 7 + i + 14 * oldPosition;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(oldPieces[i]);
+                    }
                 }
                 Console.BackgroundColor = ConsoleColor.White;
             }
             else if (oldPosition < 20)
             {
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < oldVisitors; i++)
                 {
                     column = 158 + i / 4;
                     row = 7 + (oldPosition - 11) * 5 - 3 * (i / 4) + i;
@@ -1000,7 +1035,7 @@ namespace Monopoly
                     Console.BackgroundColor = ConsoleColor.DarkGray;
                 }
                 else row = 57;
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < oldVisitors; i++)
                 {
                     column = 147 + i - 14 * (oldPosition - 20);
                     Console.SetCursorPosition(column, row);
@@ -1016,7 +1051,7 @@ namespace Monopoly
             }
             else
             {
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < oldVisitors; i++)
                 {
                     column = 1 - i / 4;
                     row = 47 - (oldPosition - 31) * 5 - 3 * (i / 4) + i;
@@ -1034,43 +1069,75 @@ namespace Monopoly
 
             if (newPosition <= 10)
             {
-
                 if (newPosition == 0)
                 {
                     row = 3;
                     Console.BackgroundColor = ConsoleColor.DarkMagenta;
+                    for (int i = 0; i < newVisitors; i++)
+                    {
+                        column = 7 + i + 14 * newPosition;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(" ");
+                    }
+                    for (int i = 0; i < newVisitors; i++)
+                    {
+                        column = 7 + i + 14 * newPosition;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(newPieces[i]);
+                    }
                 }
                 else if (newPosition == 10)
                 {
-                    if (prisoned)
+                    row = 5;
+                    Console.BackgroundColor = ConsoleColor.Gray;
+                    for (int i = 0; i < prisonedVisitors; i++)
                     {
-                        row = 5;
-                        Console.BackgroundColor = ConsoleColor.Gray;
+                        column = 147 + i;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(" ");
                     }
-                    else
+                    for (int i = 0; i < prisonedVisitors; i++)
                     {
-                        row = 3;
-                        Console.BackgroundColor = ConsoleColor.DarkMagenta;
+                        column = 147 + i;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(prisonerPieces[i]);
+                    }
+                    row = 3;
+                    Console.BackgroundColor = ConsoleColor.DarkMagenta;
+                    for (int i = 0; i < newVisitors; i++)
+                    {
+                        column = 147 + i;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(" ");
+                    }
+                    for (int i = 0; i < newVisitors; i++)
+                    {
+                        column = 147 + i;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(newPieces[i]);
                     }
                 }
-                else row = 0;
-                for (int i = 0; i < 8; i++)
+                else
                 {
-                    column = 7 + i + 14 * newPosition;
-                    Console.SetCursorPosition(column, row);
-                    Console.Write(" ");
-                }
-                for (int i = 0; i < newVisitors; i++)
-                {
-                    column = 7 + i + 14 * newPosition;
-                    Console.SetCursorPosition(column, row);
-                    Console.Write(newPieces[i]);
+                    row = 0;
+                    for (int i = 0; i < newVisitors; i++)
+                    {
+                        column = 7 + i + 14 * newPosition;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(" ");
+                    }
+                    for (int i = 0; i < newVisitors; i++)
+                    {
+                        column = 7 + i + 14 * newPosition;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(newPieces[i]);
+                    }
                 }
                 Console.BackgroundColor = ConsoleColor.White;
             }
             else if (newPosition < 20)
             {
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < newVisitors; i++)
                 {
                     column = 158 + i / 4;
                     row = 7 + (newPosition - 11) * 5 - 3 * (i / 4) + i;
@@ -1098,7 +1165,7 @@ namespace Monopoly
                     Console.BackgroundColor = ConsoleColor.DarkGray;
                 }
                 else row = 57;
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < newVisitors; i++)
                 {
                     column = 147 + i - 14 * (newPosition - 20);
                     Console.SetCursorPosition(column, row);
@@ -1114,7 +1181,7 @@ namespace Monopoly
             }
             else
             {
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < newVisitors; i++)
                 {
                     column = 1 - i / 4;
                     row = 47 - (newPosition - 31) * 5 - 3 * (i / 4) + i;
@@ -1142,15 +1209,16 @@ namespace Monopoly
             Console.SetCursorPosition(165, 51);
             Console.Write("║                             Обмен                             ║");
             Console.SetCursorPosition(165, 53);
-            Console.Write("║ AD – Выбрать игрока           Enter – Предложить игроку обмен ║");
+            Console.Write("║ AD – Выбрать игрока                WS – Переключить имущество ║");
             Console.SetCursorPosition(165, 54);
+            Console.Write("║ Enter – Предложить игроку обмен   Backspace – Отменить обмен  ║");
             if (musicMuted)
             {
-                Console.Write("║ Backspace – Отменить обмен                M – Включить музыку ║");
+                Console.Write("║                      M – Включить музыку                      ║");
             }
             else
             {
-                Console.Write("║ Backspace – Отменить обмен               M – Заглушить музыку ║");
+                Console.Write("║                      M – Заглушить музыку                     ║");
             }
             Console.SetCursorPosition(165, 55);
             Console.Write("                                                                 ");
@@ -1173,13 +1241,13 @@ namespace Monopoly
                         {
                             musicMuted = false;
                             musicPlayer.PlayLooping();
-                            Console.Write("║ Backspace – Отменить обмен               M – Заглушить музыку ║");
+                            Console.Write("║                      M – Заглушить музыку                     ║");
                         }
                         else
                         {
                             musicMuted = true;
                             musicPlayer.Stop();
-                            Console.Write("║ Backspace – Отменить обмен                M – Включить музыку ║");
+                            Console.Write("║                      M – Включить музыку                      ║");
                         }
                         break;
                     case ConsoleKey.Backspace:
@@ -1232,9 +1300,13 @@ namespace Monopoly
                         Console.Write("                                                                 ");
                         Console.SetCursorPosition(165, 55);
                         Console.Write("                                                                 ");
+                        Console.SetCursorPosition(165, 56);
+                        Console.Write("                                                                 ");
                         if (player.prisoned)
                         {
                             // ToDo
+                            PrintPieces(10, 10, player.piece);
+                            return 0;
                         }
                         else
                         {
@@ -1247,11 +1319,11 @@ namespace Monopoly
                                 doubles++;
                                 if (doubles == 3)
                                 {
-                                    player.position = 10;
                                     player.prisoned = true;
                                     quartals[10].visitors++;
                                     PrintPieces(30, 10, player.piece);
                                     quartals[30].visitors--;
+                                    player.position = 10;
                                     doubles = 0;
                                     return 0;
                                 }
@@ -1264,35 +1336,16 @@ namespace Monopoly
                             PrintDices(dice1, dice2, doubles);
                             if (!player.prisoned)
                             {
-                                if (oldPosition > newPosition)
+                                for (int j = oldPosition; j != newPosition;)
                                 {
-                                    for (int j = oldPosition; j < 40; j++)
-                                    {
-                                        quartals[(j + 1) % 40].visitors++;
-                                        PrintPieces(j, (j + 1) % 40, player.piece);
-                                        quartals[j].visitors--;
-                                        Thread.Sleep(sleep);
-                                    }
-                                    for (int j = 0; j < newPosition; j++)
-                                    {
-                                        quartals[j + 1].visitors++;
-                                        PrintPieces(j, j + 1, player.piece);
-                                        quartals[j].visitors--;
-                                        Thread.Sleep(sleep);
-                                    }
-                                }
-                                else
-                                {
-                                    for (int j = oldPosition; j < newPosition; j++)
-                                    {
-                                        quartals[j + 1].visitors++;
-                                        PrintPieces(j, j + 1, player.piece);
-                                        quartals[j].visitors--;
-                                        Thread.Sleep(sleep);
-                                    }
+                                    int next = (j + 1) % 40;
+                                    quartals[next].visitors++;
+                                    PrintPieces(j, next, player.piece);
+                                    quartals[j].visitors--;
+                                    Thread.Sleep(sleep);
+                                    j = next;
                                 }
                                 Quartal quartal = quartals[newPosition];
-                                quartal.visitors++;
                                 player.position = newPosition;
                                 if (quartal.special == 1)
                                 {
@@ -1312,11 +1365,11 @@ namespace Monopoly
                                 }
                                 else if (quartal.special == 5)
                                 {
-                                    player.position = 10;
                                     player.prisoned = true;
                                     quartals[10].visitors++;
                                     PrintPieces(30, 10, player.piece);
                                     quartals[30].visitors--;
+                                    player.position = 10;
                                     doubles = 0;
                                     return 0;
                                 }
@@ -1369,6 +1422,10 @@ namespace Monopoly
                                 if (oldPosition > newPosition) player.balance += 200;
                                 if (doubled) return 1;
                                 return 0;
+                            }
+                            else
+                            {
+                                // Todo
                             }
                         }
                         break;
@@ -1527,9 +1584,11 @@ namespace Monopoly
                 }
             } while (participants > 1);
 
-            quartal.owner = buyer;
-            buyer.property = buyer.property.Append(quartal).ToArray();
-
+            if (buyer != null)
+            {
+                quartal.owner = buyer;
+                buyer.property = buyer.property.Append(quartal).ToArray();
+            }
             for (int i = 0; i < playersCount; i++)
             {
                 players[i].canselled = false;
@@ -1585,6 +1644,10 @@ namespace Monopoly
                     player.liberation++;
                     break;
                 case 5:
+                    int position = player.position;
+                    quartals[10].visitors++;
+                    PrintPieces(position, 10, player.piece);
+                    quartals[position].visitors--;
                     player.position = 10;
                     player.prisoned = true;
                     break;
@@ -1637,6 +1700,7 @@ namespace Monopoly
                 chances[i - 1] = chances[i];
             }
             chances[15] = card;
+            int position = player.position;
             switch (card)
             {
                 // SetCursorPosition + WriteLine
@@ -1644,6 +1708,9 @@ namespace Monopoly
                     player.balance -= 40 * player.housesCount + 115 * player.hotelsCount;
                     break;
                 case 1:
+                    quartals[10].visitors++;
+                    PrintPieces(position, 10, player.piece);
+                    quartals[position].visitors--;
                     player.position = 10;
                     player.prisoned = true;
                     break;
@@ -1651,8 +1718,16 @@ namespace Monopoly
                     player.balance -= 20;
                     break;
                 case 3:
-                    if (player.position < 3) player.position += 37;
-                    else player.position -= 3;
+                    for (int j = position; j != (position + 37) % 40;)
+                    {
+                        int next = (position + 1) % 40;
+                        quartals[next].visitors++;
+                        PrintPieces(j, next, player.piece);
+                        quartals[j].visitors--;
+                        Thread.Sleep(sleep);
+                        j = next;
+                    }
+                    player.position = (position + 37) % 40;
                     break;
                 case 4:
                     player.liberation++;
@@ -1665,10 +1740,18 @@ namespace Monopoly
                     break;
                 case 7:
                     if (player.position > 6) player.balance += 200;
+                    position = player.position;
+                    quartals[6].visitors++;
+                    PrintPieces(position, 6, player.piece);
+                    quartals[position].visitors--;
                     player.position = 6;
                     break;
                 case 8:
                     player.balance += 200;
+                    position = player.position;
+                    quartals[0].visitors++;
+                    PrintPieces(position, 0, player.piece);
+                    quartals[position].visitors--;
                     player.position = 0;
                     break;
                 case 9:
@@ -1676,16 +1759,28 @@ namespace Monopoly
                     break;
                 case 10:
                     if (player.position > 15) player.balance += 200;
+                    position = player.position;
+                    quartals[15].visitors++;
+                    PrintPieces(position, 15, player.piece);
+                    quartals[position].visitors--;
                     player.position = 15;
                     break;
                 case 11:
                     player.balance += 100;
                     break;
                 case 12:
+                    position = player.position;
+                    quartals[39].visitors++;
+                    PrintPieces(position, 39, player.piece);
+                    quartals[position].visitors--;
                     player.position = 39;
                     break;
                 case 13:
                     if (player.position > 24) player.balance += 200;
+                    position = player.position;
+                    quartals[24].visitors++;
+                    PrintPieces(position, 24, player.piece);
+                    quartals[position].visitors--;
                     player.position = 24;
                     break;
                 case 14:
@@ -1878,8 +1973,7 @@ namespace Monopoly
                 {
                     if (players[i].bankrupt) continue;
                     PrintPlayers(i);
-                    i -= Menu(players[i]);
-                    Auction(quartals[1]);
+                          i -= Menu(players[i]);
                 }
             }
         }
