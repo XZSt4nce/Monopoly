@@ -23,20 +23,20 @@ namespace Monopoly
             new Quartal(0),
             new Quartal("Старая дорога", ConsoleColor.Yellow, 60, 2, 4, 10, 30, 90, 160, 250, 50, 30),
             new Quartal(1),
-            new Quartal("Главная дорога", ConsoleColor.Yellow, 60, 4, 8, 20, 60, 180, 320, 450, 50, 30),
+            new Quartal("Главное шоссе", ConsoleColor.Yellow, 60, 4, 8, 20, 60, 180, 320, 450, 50, 30),
             new Quartal(8),
             new Quartal("Западный морской порт", 200, 25, 50, 100, 200, 100),
             new Quartal("Аквапарк", ConsoleColor.DarkYellow, 100, 6, 12, 30, 90, 270, 400, 550, 50, 50),
             new Quartal(2),
             new Quartal("Городской парк", ConsoleColor.DarkYellow, 100, 6, 12, 30, 90, 270, 400, 550, 50, 50),
-            new Quartal("Гоночный курорт", ConsoleColor.DarkYellow, 120, 8, 16, 40, 100, 300, 450, 600, 50, 60),
+            new Quartal("Горнолыжный курорт", ConsoleColor.DarkYellow, 120, 8, 16, 40, 100, 300, 450, 600, 50, 60),
             new Quartal(3),
             new Quartal("Спальный район", ConsoleColor.DarkGreen, 140, 10, 20, 50, 150, 450, 625, 750, 100, 70),
             new Quartal("Электрическая компания", 150, 75),
             new Quartal("Деловой квартал", ConsoleColor.DarkGreen, 140, 10, 20, 50, 150, 450, 625, 750, 100, 70),
             new Quartal("Торговая площадь", ConsoleColor.DarkGreen, 160, 12, 24, 60, 180, 500, 700, 900, 100, 80),
             new Quartal("Северный морской порт", 200, 25, 50, 100, 200, 100),
-            new Quartal("Улица Пушкина", ConsoleColor.Green, 180, 14, 28, 70, 2000, 550, 750, 950, 100, 90),
+            new Quartal("Улица Пушкина", ConsoleColor.Green, 180, 14, 28, 70, 200, 550, 750, 950, 100, 90),
             new Quartal(1),
             new Quartal("Проспект Мира", ConsoleColor.Green, 180, 14, 28, 70, 200, 550, 750, 950, 100, 90),
             new Quartal("Проспект Победы", ConsoleColor.Green, 200, 16, 32, 80, 220, 600, 800, 1000, 100, 100),
@@ -48,18 +48,18 @@ namespace Monopoly
             new Quartal("Восточный морской порт", 200, 25, 50, 100, 200, 100),
             new Quartal("Компьютеры", ConsoleColor.Magenta, 260, 22, 44, 110, 330, 800, 975, 1150, 150, 130),
             new Quartal("Интернет", ConsoleColor.Magenta, 260, 22, 44, 110, 330, 800, 975, 1150, 150, 130),
-            new Quartal("Водопроводная компания", 150, 75),
+            new Quartal("Водопроводная станция", 150, 75),
             new Quartal("Сотовая связь", ConsoleColor.Magenta, 280, 24, 48, 120, 360, 850, 1025, 1200, 150, 140),
             new Quartal(5),
             new Quartal("Морские перевозки", ConsoleColor.Blue, 300, 26, 52, 130, 390, 900, 1100, 1275, 200, 150),
             new Quartal("Железная дорога", ConsoleColor.Blue, 300, 26, 52, 130, 390, 900, 1100, 1275, 200, 150),
             new Quartal(1),
-            new Quartal("Авиакомпания", ConsoleColor.Blue, 320, 28, 56, 150, 450, 100, 1200, 1400, 200, 160),
+            new Quartal("Авиакомпания", ConsoleColor.Blue, 320, 28, 56, 150, 450, 1000, 1200, 1400, 200, 160),
             new Quartal("Южный морской порт", 200, 25, 50, 100, 200, 100),
             new Quartal(2),
-            new Quartal("Курортная зона", ConsoleColor.Cyan, 350, 22, 44, 110, 330, 800, 975, 1150, 150, 130),
+            new Quartal("Курортная зона", ConsoleColor.Cyan, 350, 35, 70, 175, 500, 1100, 1300, 1500, 200, 175),
             new Quartal(9),
-            new Quartal("Гостиничный комплекс", ConsoleColor.Cyan, 400, 22, 44, 110, 330, 800, 975, 1150, 150, 130),
+            new Quartal("Гостиничный комплекс", ConsoleColor.Cyan, 400, 50, 100, 200, 600, 1400, 1700, 2000, 200, 200),
         };
         static public readonly Random rnd = new Random();
 
@@ -586,45 +586,15 @@ namespace Monopoly
             Console.BackgroundColor = ConsoleColor.Black;
             Console.Write("             ");
             Console.BackgroundColor = ConsoleColor.White;
-            Console.Write("║                   ");
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write(" __    __     ______     __   __     ______     ______   ______     __         __  __   ");
-            Console.BackgroundColor = ConsoleColor.White;
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.Write("                  ║");
+            Console.Write("║                                                                                                                             ║");
             Console.BackgroundColor = ConsoleColor.Black;
             Console.Write("             ");
             Console.BackgroundColor = ConsoleColor.White;
             Console.WriteLine("║");
-            Console.Write("   ║    Южный    ║                   ");
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write("/\\ \"-./  \\   /\\  __ \\   /\\ \"-.\\ \\   /\\  __ \\   /\\  == \\ /\\  __ \\   /\\ \\       /\\ \\_\\ \\  ");
-            Console.BackgroundColor = ConsoleColor.White;
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.WriteLine("                  ║  Северный   ║");
-            Console.Write("   ║ морской порт║                   ");
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write("\\ \\ \\-./\\ \\  \\ \\ \\/\\ \\  \\ \\ \\-.  \\  \\ \\ \\/\\ \\  \\ \\  _-/ \\ \\ \\/\\ \\  \\ \\ \\____  \\ \\____ \\ ");
-            Console.BackgroundColor = ConsoleColor.White;
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.WriteLine("                  ║ морской порт║");
-            Console.Write("   ║     200$    ║                   ");
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write(" \\ \\_\\ \\ \\_\\  \\ \\_____\\  \\ \\_\\\\\"\\_\\  \\ \\_____\\  \\ \\_\\    \\ \\_____\\  \\ \\_____\\  \\/\\_____\\");
-            Console.BackgroundColor = ConsoleColor.White;
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.WriteLine("                  ║     200$    ║");
-            Console.Write("   ╠═════════════╣                   ");
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write("  \\/_/  \\/_/   \\/_____/   \\/_/ \\/_/   \\/_____/   \\/_/     \\/_____/   \\/_____/   \\/_____/");
-            Console.BackgroundColor = ConsoleColor.White;
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.WriteLine("                  ╠═════════════╣");
+            Console.WriteLine("   ║    Южный    ║                                                                                                                             ║  Северный   ║");
+            Console.WriteLine("   ║ морской порт║                                                                                                                             ║ морской порт║");
+            Console.WriteLine("   ║     200$    ║                                                                                                                             ║     200$    ║");
+            Console.WriteLine("   ╠═════════════╣                                                                                                                             ╠═════════════╣");
             Console.Write("   ║");
             Console.BackgroundColor = ConsoleColor.Blue;
             Console.Write("             ");
@@ -814,6 +784,7 @@ namespace Monopoly
             Console.BackgroundColor = ConsoleColor.White;
             Console.WriteLine("║");
             Console.WriteLine("   ╚═════════════╩═════════════╩═════════════╩═════════════╩═════════════╩═════════════╩═════════════╩═════════════╩═════════════╩═════════════╩═════════════╝");
+            PrintTitle();
         }
 
         /// <summary>
@@ -899,13 +870,17 @@ namespace Monopoly
                 Console.BackgroundColor = background;
                 Console.Write($" {player.cyan}/2 ║");
                 Console.SetCursorPosition(165 + addWidth, 11 + addHeight);
-                Console.Write("║          ");
+                Console.Write("║ ");
                 Console.BackgroundColor = ConsoleColor.Black;
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write("Чёрная");
                 Console.BackgroundColor = background;
                 Console.ForegroundColor = ConsoleColor.Black;
-                Console.Write($" {player.black}/4         ║");
+                Console.Write($" {player.black}/4        ");
+                Console.BackgroundColor = ConsoleColor.Gray;
+                Console.Write("Серая");
+                Console.BackgroundColor = background;
+                Console.Write($" {player.gray}/2 ║");
                 Console.SetCursorPosition(165 + addWidth, 12 + addHeight);
                 Console.Write("╚═════════════════════════════╝");
             }
@@ -1260,65 +1235,246 @@ namespace Monopoly
         /// Метод вывода карточки города посередине поля
         /// </summary>
         /// <param name="quartal">Город, карточка которого, будет выводиться</param>
-        public void PrintCard(Quartal quartal)
+        static public void PrintCard(Quartal quartal)
         {
-            if (quartal.name.Length > 13)
-            {
-                Console.SetCursorPosition(69, 26);
-                Console.Write("╔═════════════════════════╗");
-                int i = 0;
-                string part1 = "", part2 = "";
-                for (i = 0; quartal.name[i] != ' '; i++)
-                {
-                    part1 += quartal.name[i];
-                }
-                for (i++;  i < quartal.name.Length; i++)
-                {
-                    part2 += quartal.name[i];
-                }
-                Console.SetCursorPosition(69, 27);
-                Console.Write("║");
-                Console.BackgroundColor = quartal.color;
-                Console.Write("             ");
-                Console.BackgroundColor = ConsoleColor.White;
-                Console.Write("║");
-                Console.SetCursorPosition(69, 28);
-                int spaces = 25 - part1.Length;
-                int left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
-                int right = Convert.ToInt32(Math.Floor(spaces / 2.0));
-                Console.Write("║");
-                for (i = 0; i < left; i++) Console.Write(" ");
-                Console.Write(part1);
-                for (i = 0; i < right; i++) Console.Write(" ");
-                Console.Write("║");
-                Console.SetCursorPosition(69, 29);
-                spaces = 25 - part2.Length;
-                left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
-                right = Convert.ToInt32(Math.Floor(spaces / 2.0));
-                Console.Write("║");
-                for (i = 0; i < left; i++) Console.Write(" ");
-                Console.Write(part1);
-                for (i = 0; i < right; i++) Console.Write(" ");
-                Console.Write("║");
-                Console.SetCursorPosition(69, 30);
-                Console.Write("╠═════════════════════════╣");
-                Console.SetCursorPosition(69, 31);
-                Console.Write("║ С цветовой группой      ║");
-                Console.SetCursorPosition(69, 32);
-                Console.Write("║                         ║");
+            int row, i, spaces, left, right;
+            string part1 = "", part2 = "";
+            switch (quartal.special) {
+                case 6:
+                    row = 23;
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("╔═════════════════════════╗");
+                    for (i = 0; quartal.name[i] != ' '; i++)
+                    {
+                        part1 += quartal.name[i];
+                    }
+                    for (i++; i < quartal.name.Length; i++)
+                    {
+                        part2 += quartal.name[i];
+                    }
+                    Console.SetCursorPosition(69, row++);
+                    spaces = 25 - part1.Length;
+                    left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
+                    right = Convert.ToInt32(Math.Floor(spaces / 2.0));
+                    Console.Write("║");
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    Console.ForegroundColor = ConsoleColor.White;
+                    for (i = 0; i < left; i++) Console.Write(" ");
+                    Console.Write(part1);
+                    for (i = 0; i < right; i++) Console.Write(" ");
+                    Console.BackgroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.Write("║");
+                    Console.SetCursorPosition(69, row++);
+                    spaces = 25 - part2.Length;
+                    left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
+                    right = Convert.ToInt32(Math.Floor(spaces / 2.0));
+                    Console.Write("║");
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    Console.ForegroundColor = ConsoleColor.White;
+                    for (i = 0; i < left; i++) Console.Write(" ");
+                    Console.Write(part2);
+                    for (i = 0; i < right; i++) Console.Write(" ");
+                    Console.BackgroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.Write("║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("╠═════════════════════════╣");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║   ПРАВО СОБСТВЕННОСТИ   ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║                       $ ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ 1 порт               25 ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ 2 порта              50 ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ 3 порта             100 ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ 4 порта             200 ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("╠═════════════════════════╣");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ Закладная           100 ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("╚═════════════════════════╝");
+                    break;
+                case 7:
+                    row = 22;
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("╔═════════════════════════╗");
+                    spaces = 25 - quartal.name.Length;
+                    left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
+                    right = Convert.ToInt32(Math.Floor(spaces / 2.0));
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║");
+                    Console.BackgroundColor = ConsoleColor.Gray;
+                    for (int j = 0; j < left; j++) Console.Write(" ");
+                    Console.Write(quartal.name);
+                    for (int j = 0; j < right; j++) Console.Write(" ");
+                    Console.BackgroundColor = ConsoleColor.White;
+                    Console.Write("║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("╠═════════════════════════╣");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║   ПРАВО СОБСТВЕННОСТИ   ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ Если у игрока одно      ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ \"Коммунальное           ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ предприятие\", аренда    ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ составляет 4 кратную    ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ сумму очков, выпавших   ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ на кубиках.             ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ Если два, то аренда     ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ 10 кратна сумме очков   ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ на кубиках.             ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("╠═════════════════════════╣");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ Закладная           75$ ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("╚═════════════════════════╝");
+                    break;
+                default:
+                    row = 20;
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("╔═════════════════════════╗");
+                    spaces = 25 - quartal.name.Length;
+                    left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
+                    right = Convert.ToInt32(Math.Floor(spaces / 2.0));
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║");
+                    Console.BackgroundColor = quartal.color;
+                    for (int j = 0; j < left; j++) Console.Write(" ");
+                    Console.Write(quartal.name);
+                    for (int j = 0; j < right; j++) Console.Write(" ");
+                    Console.BackgroundColor = ConsoleColor.White;
+                    Console.Write("║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("╠═════════════════════════╣");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║   ПРАВО СОБСТВЕННОСТИ   ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║                       $ ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ Без цветовой группы ");
+                    if (quartal.noMonopolyRent < 100) Console.Write(" ");
+                    if (quartal.noMonopolyRent < 10) Console.Write(" ");
+                    Console.Write($"{quartal.noMonopolyRent} ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ С цветовой группой  ");
+                    if (quartal.monopolyRent < 100) Console.Write(" ");
+                    if (quartal.monopolyRent < 10) Console.Write(" ");
+                    Console.Write($"{quartal.monopolyRent} ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ 1 дом               ");
+                    if (quartal.house1Rent < 100) Console.Write(" ");
+                    Console.Write($"{quartal.house1Rent} ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ 2 дома              ");
+                    if (quartal.house2Rent < 100) Console.Write(" ");
+                    Console.Write($"{quartal.house2Rent} ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ 3 дома             ");
+                    if (quartal.house3Rent < 1000) Console.Write(" ");
+                    if (quartal.house3Rent < 100) Console.Write(" ");
+                    Console.Write($"{quartal.house3Rent} ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ 4 дома             ");
+                    if (quartal.house4Rent < 1000) Console.Write(" ");
+                    if (quartal.house4Rent < 100) Console.Write(" ");
+                    Console.Write($"{quartal.house4Rent} ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ Отель              ");
+                    if (quartal.hotelRent < 1000) Console.Write(" ");
+                    if (quartal.hotelRent < 100) Console.Write(" ");
+                    Console.Write($"{quartal.hotelRent} ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("╠═════════════════════════╣");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ Постройка дома      ");
+                    if (quartal.houseCost < 100) Console.Write(" ");
+                    Console.Write($"{quartal.houseCost} ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ Постройка отеля     ");
+                    if (quartal.houseCost < 100) Console.Write(" ");
+                    Console.Write($"{quartal.houseCost} ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║                 +4 дома ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("║ Закладная           ");
+                    if (quartal.pledge < 100) Console.Write(" ");
+                    Console.Write($"{quartal.pledge} ║");
+                    Console.SetCursorPosition(69, row++);
+                    Console.Write("╚═════════════════════════╝");
+                    break;
             }
-            else
-            {
+        }
 
+        /// <summary>
+        /// Печатает надпись "Monopoly" посередине игрового поля
+        /// </summary>
+        static public void PrintTitle()
+        {
+            int column = 18, row = 16;
+            for (int i = 0; i < 11; i++)
+            {
+                Console.SetCursorPosition(column, row++);
+                Console.Write("                                                                                                                             ");
             }
-            /*
-            Console.Write("║");
-            for (int j = 0; j < left; j++) Console.Write(" ");
-            Console.Write(quartal.name);
-            for (int j = 0; j < right; j++) Console.Write(" ");
-            Console.Write("║");
-            Console.SetCursorPosition(69, 28);
-            Console.Write("╠══════════════════════╣");*/
+            Console.SetCursorPosition(column, row++);
+            Console.Write("                   ");
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(" __    __     ______     __   __     ______     ______   ______     __         __  __   ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write("                  ");
+            Console.SetCursorPosition(column, row++);
+            Console.Write("                   ");
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("/\\ \"-./  \\   /\\  __ \\   /\\ \"-.\\ \\   /\\  __ \\   /\\  == \\ /\\  __ \\   /\\ \\       /\\ \\_\\ \\  ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write("                  ");
+            Console.SetCursorPosition(column, row++);
+            Console.Write("                   ");
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("\\ \\ \\-./\\ \\  \\ \\ \\/\\ \\  \\ \\ \\-.  \\  \\ \\ \\/\\ \\  \\ \\  _-/ \\ \\ \\/\\ \\  \\ \\ \\____  \\ \\____ \\ ");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write("                  ");
+            Console.SetCursorPosition(column, row++);
+            Console.Write("                   ");
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(" \\ \\_\\ \\ \\_\\  \\ \\_____\\  \\ \\_\\\\\"\\_\\  \\ \\_____\\  \\ \\_\\    \\ \\_____\\  \\ \\_____\\  \\/\\_____\\");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write("                  ");
+            Console.SetCursorPosition(column, row++);
+            Console.Write("                   ");
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("  \\/_/  \\/_/   \\/_____/   \\/_/ \\/_/   \\/_____/   \\/_/     \\/_____/   \\/_____/   \\/_____/");
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write("                  ");
+            for (int i = 0; i < 10; i++)
+            {
+                Console.SetCursorPosition(column, row++);
+                Console.Write("                                                                                                                             ");
+            }
         }
 
         /// <summary>
@@ -1658,24 +1814,7 @@ namespace Monopoly
             {
                 players[i].canselled = false;
             }
-            Console.SetCursorPosition(69, 26);
-            Console.Write("                        ");
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.SetCursorPosition(69, 27);
-            Console.Write("     ______     ______  ");
-            Console.SetCursorPosition(69, 28);
-            Console.Write("\\   /\\  __ \\   /\\  == \\ ");
-            Console.SetCursorPosition(69, 29);
-            Console.Write(" \\  \\ \\ \\/\\ \\  \\ \\  _-/ ");
-            Console.SetCursorPosition(69, 30);
-            Console.Write("\\_\\  \\ \\_____\\  \\ \\_\\   ");
-            Console.SetCursorPosition(69, 31);
-            Console.Write("/_/   \\/_____/   \\/_/   ");
-            Console.BackgroundColor = ConsoleColor.White;
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.SetCursorPosition(69, 32);
-            Console.Write("                        ");
+            PrintTitle();
         }
 
         /// <summary>
@@ -2034,6 +2173,9 @@ namespace Monopoly
             PrintRoadmap();
             while (remaining > 1)
             {
+                PrintCard(quartals[1]);
+                Console.ReadKey(true);
+                PrintTitle();
                 for (int i = 0; i < playersCount; i++)
                 {
                     if (players[i].bankrupt) continue;

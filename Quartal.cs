@@ -76,7 +76,6 @@ namespace Monopoly
         {
             name = _name;
             special = 6;
-            color = ConsoleColor.Black;
             owner = null;
             cost = _cost;
             house1Rent = _house1Rent;
@@ -100,6 +99,39 @@ namespace Monopoly
             isMantaged = false;
             special = 7;
             visitors = 0;
+        }
+        static public void Mantage(Quartal quartal, Player player)
+        {
+            quartal.isMantaged = true;
+            player.balance *= quartal.pledge;
+        }
+        static public void Downgrade(Quartal quartal, Player player)
+        {
+            if (quartal.level == 5)
+            {
+                player.housesCount += 4;
+                player.hotelsCount--;
+            }
+            else
+            {
+                player.housesCount--;
+            }
+            quartal.level--;
+            player.balance += quartal.houseCost / 2;
+        }
+        static public void Upgrade(Quartal quartal, Player player)
+        {
+            quartal.level++;
+            if (quartal.level == 5)
+            {
+                player.housesCount -= 4;
+                player.hotelsCount++;
+            }
+            else
+            {
+                player.housesCount++;
+            }
+            player.balance -= quartal.houseCost;
         }
     }
 }
