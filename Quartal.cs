@@ -5,7 +5,7 @@ namespace Monopoly
     public class Quartal
     {
         public readonly string name;
-        public readonly string color;
+        public readonly ConsoleColor color;
         public Player owner;
         public int visitors;
         /// <summary>
@@ -50,7 +50,7 @@ namespace Monopoly
         /// Является ли улица заложенной
         /// </summary>
         public bool isMantaged;
-        public Quartal (string _name, string _color, int _cost, int _noMonopolyRent, int _monopolyRent, int _house1Rent, int _house2Rent,
+        public Quartal (string _name, ConsoleColor _color, int _cost, int _noMonopolyRent, int _monopolyRent, int _house1Rent, int _house2Rent,
                        int _house3Rent, int _house4Rent, int _hotelRent, int _houseCost, int _pledge)
         {
             name = _name;
@@ -76,7 +76,7 @@ namespace Monopoly
         {
             name = _name;
             special = 6;
-            color = "Black";
+            color = ConsoleColor.Black;
             owner = null;
             cost = _cost;
             house1Rent = _house1Rent;

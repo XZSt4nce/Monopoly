@@ -21,45 +21,45 @@ namespace Monopoly
         static public Quartal[] quartals = new Quartal[40]
         {
             new Quartal(0),
-            new Quartal("Старая дорога", "Yellow", 60, 2, 4, 10, 30, 90, 160, 250, 50, 30),
+            new Quartal("Старая дорога", ConsoleColor.Yellow, 60, 2, 4, 10, 30, 90, 160, 250, 50, 30),
             new Quartal(1),
-            new Quartal("Главная дорога", "Yellow", 60, 4, 8, 20, 60, 180, 320, 450, 50, 30),
+            new Quartal("Главная дорога", ConsoleColor.Yellow, 60, 4, 8, 20, 60, 180, 320, 450, 50, 30),
             new Quartal(8),
             new Quartal("Западный морской порт", 200, 25, 50, 100, 200, 100),
-            new Quartal("Аквапарк", "DarkYellow", 100, 6, 12, 30, 90, 270, 400, 550, 50, 50),
+            new Quartal("Аквапарк", ConsoleColor.DarkYellow, 100, 6, 12, 30, 90, 270, 400, 550, 50, 50),
             new Quartal(2),
-            new Quartal("Городской парк", "DarkYellow", 100, 6, 12, 30, 90, 270, 400, 550, 50, 50),
-            new Quartal("Гоночный курорт", "DarkYellow", 120, 8, 16, 40, 100, 300, 450, 600, 50, 60),
+            new Quartal("Городской парк", ConsoleColor.DarkYellow, 100, 6, 12, 30, 90, 270, 400, 550, 50, 50),
+            new Quartal("Гоночный курорт", ConsoleColor.DarkYellow, 120, 8, 16, 40, 100, 300, 450, 600, 50, 60),
             new Quartal(3),
-            new Quartal("Спальный район", "DarkGreen", 140, 10, 20, 50, 150, 450, 625, 750, 100, 70),
+            new Quartal("Спальный район", ConsoleColor.DarkGreen, 140, 10, 20, 50, 150, 450, 625, 750, 100, 70),
             new Quartal("Электрическая компания", 150, 75),
-            new Quartal("Деловой квартал", "DarkGreen", 140, 10, 20, 50, 150, 450, 625, 750, 100, 70),
-            new Quartal("Торговая площадь", "DarkGreen", 160, 12, 24, 60, 180, 500, 700, 900, 100, 80),
+            new Quartal("Деловой квартал", ConsoleColor.DarkGreen, 140, 10, 20, 50, 150, 450, 625, 750, 100, 70),
+            new Quartal("Торговая площадь", ConsoleColor.DarkGreen, 160, 12, 24, 60, 180, 500, 700, 900, 100, 80),
             new Quartal("Северный морской порт", 200, 25, 50, 100, 200, 100),
-            new Quartal("Улица Пушкина", "Green", 180, 14, 28, 70, 2000, 550, 750, 950, 100, 90),
+            new Quartal("Улица Пушкина", ConsoleColor.Green, 180, 14, 28, 70, 2000, 550, 750, 950, 100, 90),
             new Quartal(1),
-            new Quartal("Проспект Мира", "Green", 180, 14, 28, 70, 200, 550, 750, 950, 100, 90),
-            new Quartal("Проспект Победы", "Green", 200, 16, 32, 80, 220, 600, 800, 1000, 100, 100),
+            new Quartal("Проспект Мира", ConsoleColor.Green, 180, 14, 28, 70, 200, 550, 750, 950, 100, 90),
+            new Quartal("Проспект Победы", ConsoleColor.Green, 200, 16, 32, 80, 220, 600, 800, 1000, 100, 100),
             new Quartal(4),
-            new Quartal("Бар", "Red", 220, 18, 36, 90, 250, 700, 875, 1050, 150, 110),
+            new Quartal("Бар", ConsoleColor.Red, 220, 18, 36, 90, 250, 700, 875, 1050, 150, 110),
             new Quartal(2),
-            new Quartal("Ночной клуб", "Red", 220, 18, 36, 90, 250, 700, 875, 1050, 150, 110),
-            new Quartal("Ресторан", "Red", 240, 20, 40, 100, 300, 750, 925, 1100, 150, 120),
+            new Quartal("Ночной клуб", ConsoleColor.Red, 220, 18, 36, 90, 250, 700, 875, 1050, 150, 110),
+            new Quartal("Ресторан", ConsoleColor.Red, 240, 20, 40, 100, 300, 750, 925, 1100, 150, 120),
             new Quartal("Восточный морской порт", 200, 25, 50, 100, 200, 100),
-            new Quartal("Компьютеры", "Magenta", 260, 22, 44, 110, 330, 800, 975, 1150, 150, 130),
-            new Quartal("Интернет", "Magenta", 260, 22, 44, 110, 330, 800, 975, 1150, 150, 130),
+            new Quartal("Компьютеры", ConsoleColor.Magenta, 260, 22, 44, 110, 330, 800, 975, 1150, 150, 130),
+            new Quartal("Интернет", ConsoleColor.Magenta, 260, 22, 44, 110, 330, 800, 975, 1150, 150, 130),
             new Quartal("Водопроводная компания", 150, 75),
-            new Quartal("Сотовая связь", "Magenta", 280, 24, 48, 120, 360, 850, 1025, 1200, 150, 140),
+            new Quartal("Сотовая связь", ConsoleColor.Magenta, 280, 24, 48, 120, 360, 850, 1025, 1200, 150, 140),
             new Quartal(5),
-            new Quartal("Морские перевозки", "Blue", 300, 26, 52, 130, 390, 900, 1100, 1275, 200, 150),
-            new Quartal("Железная дорога", "Blue", 300, 26, 52, 130, 390, 900, 1100, 1275, 200, 150),
+            new Quartal("Морские перевозки", ConsoleColor.Blue, 300, 26, 52, 130, 390, 900, 1100, 1275, 200, 150),
+            new Quartal("Железная дорога", ConsoleColor.Blue, 300, 26, 52, 130, 390, 900, 1100, 1275, 200, 150),
             new Quartal(1),
-            new Quartal("Авиакомпания", "Blue", 320, 28, 56, 150, 450, 100, 1200, 1400, 200, 160),
+            new Quartal("Авиакомпания", ConsoleColor.Blue, 320, 28, 56, 150, 450, 100, 1200, 1400, 200, 160),
             new Quartal("Южный морской порт", 200, 25, 50, 100, 200, 100),
             new Quartal(2),
-            new Quartal("Курортная зона", "Cyan", 350, 22, 44, 110, 330, 800, 975, 1150, 150, 130),
+            new Quartal("Курортная зона", ConsoleColor.Cyan, 350, 22, 44, 110, 330, 800, 975, 1150, 150, 130),
             new Quartal(9),
-            new Quartal("Гостиничный комплекс", "Cyan", 400, 22, 44, 110, 330, 800, 975, 1150, 150, 130),
+            new Quartal("Гостиничный комплекс", ConsoleColor.Cyan, 400, 22, 44, 110, 330, 800, 975, 1150, 150, 130),
         };
         static public readonly Random rnd = new Random();
 
@@ -1254,6 +1254,64 @@ namespace Monopoly
                         return 0;
                 }
             }
+        }
+
+        /// <summary>
+        /// Метод вывода карточки города посередине поля
+        /// </summary>
+        /// <param name="quartal">Город, карточка которого, будет выводиться</param>
+        public void PrintCard(Quartal quartal)
+        {
+            if (quartal.name.Length > 13)
+            {
+                Console.SetCursorPosition(69, 26);
+                Console.Write("╔═════════════╗");
+                int i = 0;
+                string part1 = "", part2 = "";
+                for (i = 0; quartal.name[i] != ' '; i++)
+                {
+                    part1 += quartal.name[i];
+                }
+                for (i++;  i < quartal.name.Length; i++)
+                {
+                    part2 += quartal.name[i];
+                }
+                Console.SetCursorPosition(69, 27);
+                Console.Write("║");
+                Console.BackgroundColor = quartal.color;
+                Console.Write("             ");
+                Console.BackgroundColor = ConsoleColor.White;
+                Console.Write("║");
+                Console.SetCursorPosition(69, 28);
+                int spaces = 13 - part1.Length;
+                int left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
+                int right = Convert.ToInt32(Math.Floor(spaces / 2.0));
+                Console.Write("║");
+                for (i = 0; i < left; i++) Console.Write(" ");
+                Console.Write(part1);
+                for (i = 0; i < right; i++) Console.Write(" ");
+                Console.Write("║");
+                Console.SetCursorPosition(69, 29);
+                spaces = 13 - part2.Length;
+                left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
+                right = Convert.ToInt32(Math.Floor(spaces / 2.0));
+                Console.Write("║");
+                for (i = 0; i < left; i++) Console.Write(" ");
+                Console.Write(part1);
+                for (i = 0; i < right; i++) Console.Write(" ");
+                Console.Write("║");
+                Console.SetCursorPosition(69, 30);
+                Console.Write("╠══════════════════════╣");
+            }
+            
+            /*
+            Console.Write("║");
+            for (int j = 0; j < left; j++) Console.Write(" ");
+            Console.Write(quartal.name);
+            for (int j = 0; j < right; j++) Console.Write(" ");
+            Console.Write("║");
+            Console.SetCursorPosition(69, 28);
+            Console.Write("╠══════════════════════╣");*/
         }
 
         /// <summary>
