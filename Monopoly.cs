@@ -1265,7 +1265,7 @@ namespace Monopoly
             if (quartal.name.Length > 13)
             {
                 Console.SetCursorPosition(69, 26);
-                Console.Write("╔═════════════╗");
+                Console.Write("╔═════════════════════════╗");
                 int i = 0;
                 string part1 = "", part2 = "";
                 for (i = 0; quartal.name[i] != ' '; i++)
@@ -1283,7 +1283,7 @@ namespace Monopoly
                 Console.BackgroundColor = ConsoleColor.White;
                 Console.Write("║");
                 Console.SetCursorPosition(69, 28);
-                int spaces = 13 - part1.Length;
+                int spaces = 25 - part1.Length;
                 int left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
                 int right = Convert.ToInt32(Math.Floor(spaces / 2.0));
                 Console.Write("║");
@@ -1292,7 +1292,7 @@ namespace Monopoly
                 for (i = 0; i < right; i++) Console.Write(" ");
                 Console.Write("║");
                 Console.SetCursorPosition(69, 29);
-                spaces = 13 - part2.Length;
+                spaces = 25 - part2.Length;
                 left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
                 right = Convert.ToInt32(Math.Floor(spaces / 2.0));
                 Console.Write("║");
@@ -1301,9 +1301,16 @@ namespace Monopoly
                 for (i = 0; i < right; i++) Console.Write(" ");
                 Console.Write("║");
                 Console.SetCursorPosition(69, 30);
-                Console.Write("╠══════════════════════╣");
+                Console.Write("╠═════════════════════════╣");
+                Console.SetCursorPosition(69, 31);
+                Console.Write("║ С цветовой группой      ║");
+                Console.SetCursorPosition(69, 32);
+                Console.Write("║                         ║");
             }
-            
+            else
+            {
+
+            }
             /*
             Console.Write("║");
             for (int j = 0; j < left; j++) Console.Write(" ");
