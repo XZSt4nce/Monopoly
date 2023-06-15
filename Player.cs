@@ -94,5 +94,47 @@
             prisoned = false;
             bankrupt = false;
         }
+        public void Bankrupt(Player player)
+        {
+            // ToDo:
+            // на вызове метода установить позицию в -1;
+            // на вызове метода вернуть карты освобождения.
+            bankrupt = true;
+            foreach (var quartal in property)
+            {
+                for (int i = quartal.level; i > 0; i--)
+                {
+                    quartal.Downgrade();
+                }
+            }
+
+            if (player == null)
+            {
+                foreach (var quartal in property)
+                {
+                    quartal.owner = null;
+                }
+            }
+            else
+            {
+                player.balance += balance;
+                foreach (var quartal in property)
+                {
+                    quartal.owner = player;
+                }
+            }
+
+            yellow = 0;
+            black = 0;
+            darkYellow = 0;
+            darkGreen = 0;
+            green = 0;
+            red = 0;
+            magenta = 0;
+            gray = 0;
+            blue = 0;
+            cyan = 0;
+            balance = 0;
+        }
     }
 }

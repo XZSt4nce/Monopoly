@@ -91,47 +91,47 @@ namespace Monopoly
             special = _special;
             visitors = 0;
         }
-        public Quartal(string _name, int _cost, int _pledge)
+        public Quartal(string _name)
         {
             name = _name;
-            cost = _cost;
-            pledge = _pledge;
+            cost = 150;
+            pledge = 75;
             isMantaged = false;
             special = 7;
             visitors = 0;
         }
-        static public void Mantage(Quartal quartal, Player player)
+         public void Mantage()
         {
-            quartal.isMantaged = true;
-            player.balance *= quartal.pledge;
+            isMantaged = true;
+            owner.balance *= pledge;
         }
-        static public void Downgrade(Quartal quartal, Player player)
+        public void Downgrade()
         {
-            if (quartal.level == 5)
+            if (level == 5)
             {
-                player.housesCount += 4;
-                player.hotelsCount--;
+                owner.housesCount += 4;
+                owner.hotelsCount--;
             }
             else
             {
-                player.housesCount--;
+                owner.housesCount--;
             }
-            quartal.level--;
-            player.balance += quartal.houseCost / 2;
+            level--;
+            owner.balance += houseCost / 2;
         }
-        static public void Upgrade(Quartal quartal, Player player)
+        public void Upgrade()
         {
-            quartal.level++;
-            if (quartal.level == 5)
+            level++;
+            if (level == 5)
             {
-                player.housesCount -= 4;
-                player.hotelsCount++;
+                owner.housesCount -= 4;
+                owner.hotelsCount++;
             }
             else
             {
-                player.housesCount++;
+                owner.housesCount++;
             }
-            player.balance -= quartal.houseCost;
+            owner.balance -= houseCost;
         }
     }
 }
