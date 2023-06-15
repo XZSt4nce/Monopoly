@@ -1,8 +1,10 @@
 ﻿using Monopoly.Properties;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Media;
 using System.Threading;
+using System.Windows.Media;
 
 // ToDo:
 // отображать на поле владельцев улиц;
@@ -20,8 +22,8 @@ namespace Monopoly
         static readonly int sleep = 400;
         static int dice1, dice2;
         static int doubles = 0;
-        static readonly SoundPlayer musicPlayer = new SoundPlayer(Resources.music);
-        static readonly SoundPlayer moneyPlayer = new SoundPlayer(Resources.money);
+        static SoundPlayer musicPlayer = new SoundPlayer(Resources.music);
+        static MediaPlayer moneyPlayer = new MediaPlayer();
         static public Player[] players;
         static public Quartal[] quartals = new Quartal[40]
         {
@@ -1063,7 +1065,6 @@ namespace Monopoly
                     if (newPosition == 0)
                     {
                         player.balance += 200;
-                        moneyPlayer.Play();
                         row = 3;
                         Console.BackgroundColor = ConsoleColor.DarkMagenta;
                         for (int i = 0; i < newVisitors; i++)
@@ -1272,14 +1273,15 @@ namespace Monopoly
 
         static public void PrintProperty(
             Player player, Player trader,
-            Quartal[] playerProperty, Quartal[] traderProperty,
+            List<Quartal> playerProperty, List<Quartal> traderProperty,
             int playerPropertyCount, int traderPropertyCount,
             int playerMoney, int traderMoney,
             int marker1, int marker2,
-            bool ownProperty, bool category)
+            bool ownProperty, bool? category,
+            int playerLiberationCount, int traderLiberationCount)
         {
-            string[] give = new string[playerPropertyCount];
-            string[] take = new string[traderPropertyCount];
+            string[] give = new string[10];
+            string[] take = new string[10];
             int gRows = 0;
             int tRows = 0;
 
@@ -1403,7 +1405,7 @@ namespace Monopoly
 
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
-            if (category)
+            if (category == true)
             {
                 Console.SetCursorPosition(column + 93, 29);
                 Console.Write("<");
@@ -1415,8 +1417,12 @@ namespace Monopoly
                 Console.Write("<");
                 Console.SetCursorPosition(column + 121, 40);
                 Console.Write(">");
+                Console.SetCursorPosition(column + 93, 39);
+                Console.Write("<");
+                Console.SetCursorPosition(column + 121, 39);
+                Console.Write(">");
             }
-            else
+            else if (category == false)
             {
                 Console.SetCursorPosition(column + 93, 40);
                 Console.Write("<");
@@ -1424,6 +1430,27 @@ namespace Monopoly
                 Console.Write(">");
                 Console.BackgroundColor = ConsoleColor.White;
                 Console.ForegroundColor = ConsoleColor.Black;
+                Console.SetCursorPosition(column + 93, 29);
+                Console.Write("<");
+                Console.SetCursorPosition(column + 121, 29);
+                Console.Write(">");
+                Console.SetCursorPosition(column + 93, 39);
+                Console.Write("<");
+                Console.SetCursorPosition(column + 121, 39);
+                Console.Write(">");
+            }
+            else
+            {
+                Console.SetCursorPosition(column + 93, 39);
+                Console.Write("<");
+                Console.SetCursorPosition(column + 121, 39);
+                Console.Write(">");
+                Console.BackgroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.SetCursorPosition(column + 93, 40);
+                Console.Write("<");
+                Console.SetCursorPosition(column + 121, 40);
+                Console.Write(">");
                 Console.SetCursorPosition(column + 93, 29);
                 Console.Write("<");
                 Console.SetCursorPosition(column + 121, 29);
@@ -1442,6 +1469,10 @@ namespace Monopoly
                 {
                     PrintCard(player.property[marker1], 113, 20);
                 }
+                Console.SetCursorPosition(column + 94, 38);
+                Console.Write("          Карточки         ");
+                Console.SetCursorPosition(column + 94, 39);
+                Console.Write($"      освобождения: {playerLiberationCount}      ");
                 Console.SetCursorPosition(column + 94, 40);
                 spaces = 26 - Convert.ToString(playerMoney).Length;
                 left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
@@ -1466,6 +1497,10 @@ namespace Monopoly
                 {
                     PrintCard(trader.property[marker2], 113, 20);
                 }
+                Console.SetCursorPosition(column + 94, 38);
+                Console.Write("          Карточки         ");
+                Console.SetCursorPosition(column + 94, 39);
+                Console.Write($"      освобождения: {traderLiberationCount}      ");
                 Console.SetCursorPosition(column + 94, 40);
                 spaces = 26 - Convert.ToString(traderMoney).Length;
                 left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
@@ -1525,15 +1560,17 @@ namespace Monopoly
                         bool trading2 = true;
                         bool ownProperty = true;
                         Player trader = traders[marker];
-                        Quartal[] yourProperty = new Quartal[player.property.Length];
-                        Quartal[] traderProperty = new Quartal[trader.property.Length];
+                        List<Quartal> playerProperty = new List<Quartal>();
+                        List<Quartal> traderProperty = new List<Quartal>();
                         int yourMoney = 0;
                         int traderMoney = 0;
-                        bool category = true;
+                        bool? category = true;
                         int marker1 = -1;
                         int marker2 = -1;
                         int playerPropertyCount = player.property.Count(p => p != null);
                         int traderPropertyCount = trader.property.Count(p => p != null);
+                        int playerLiberationCount = 0;
+                        int traderLiberationCount = 0;
 
                         for (int i = 0; i < playerPropertyCount; i++)
                         {
@@ -1543,14 +1580,15 @@ namespace Monopoly
                         {
                             if (trader.property[i].level == 0) marker2 = i;
                         }
+                        
+                        Console.SetCursorPosition(165, 53);
+                        Console.Write("║ AD – Выбрать улицу/количество денег WS – Выбрать тип имущества║");
+                        Console.SetCursorPosition(165, 54);
+                        Console.Write("║ Enter – Подтвердить сделку         Пробел – Подтвердить улицу ║");
+                        Console.SetCursorPosition(165, 55);
+                        Console.Write("║ Esc – Отменить сделку                       Backspace – Назад ║");
                         while (trading2)
                         {
-                            Console.SetCursorPosition(165, 53);
-                            Console.Write("║ AD – Выбрать улицу/количество денег WS – Выбрать тип имущества║");
-                            Console.SetCursorPosition(165, 54);
-                            Console.Write("║ Enter – Подтвердить сделку         Пробел – Подтвердить улицу ║");
-                            Console.SetCursorPosition(165, 55);
-                            Console.Write("║ Esc – Отменить сделку                       Backspace – Назад ║");
                             Console.SetCursorPosition(165, 56);
                             if (musicMuted)
                             {
@@ -1565,11 +1603,24 @@ namespace Monopoly
                             else Console.Write("P – Выбрать Ваше имущество");
                             Console.SetCursorPosition(165, 57);
                             Console.Write("╚═══════════════════════════════════════════════════════════════╝");
-                            PrintProperty(player, trader, yourProperty, traderProperty, playerPropertyCount, traderPropertyCount, yourMoney, traderMoney, marker1, marker2, ownProperty, category);
+                            PrintProperty(player,
+                                          trader,
+                                          playerProperty,
+                                          traderProperty,
+                                          playerPropertyCount,
+                                          traderPropertyCount,
+                                          yourMoney,
+                                          traderMoney,
+                                          marker1,
+                                          marker2,
+                                          ownProperty,
+                                          category,
+                                          playerLiberationCount,
+                                          traderLiberationCount);
                             switch (Console.ReadKey(true).Key)
                             {
                                 case ConsoleKey.A:
-                                    if (category)
+                                    if (category == true)
                                     {
                                         bool notFound = true;
                                         if (ownProperty)
@@ -1594,7 +1645,7 @@ namespace Monopoly
                                                 }
                                             }
                                         }
-                                        else
+                                        else if (category == false)
                                         {
                                             if (marker2 != -1)
                                             {
@@ -1616,6 +1667,17 @@ namespace Monopoly
                                                 }
                                             }
                                         }
+                                        else
+                                        {
+                                            if (ownProperty)
+                                            {
+                                                if (playerLiberationCount != 0) playerLiberationCount--;
+                                            }
+                                            else
+                                            {
+                                                if (traderLiberationCount != 0) traderLiberationCount--;
+                                            }
+                                        }
                                     }
                                     else
                                     {
@@ -1632,7 +1694,7 @@ namespace Monopoly
                                     }
                                     break;
                                 case ConsoleKey.D:
-                                    if (category)
+                                    if (category == true)
                                     {
                                         bool notFound = true;
                                         if (ownProperty)
@@ -1653,7 +1715,6 @@ namespace Monopoly
                                                     notFound = false;
                                                 }
                                             }
-
                                         }
                                         else
                                         {
@@ -1675,7 +1736,7 @@ namespace Monopoly
                                             }
                                         }
                                     }
-                                    else
+                                    else if (category == false)
                                     {
                                         if (ownProperty)
                                         {
@@ -1688,40 +1749,133 @@ namespace Monopoly
                                             if (traderMoney > trader.balance) traderMoney = trader.balance;
                                         }
                                     }
-                                    break;
-                                case ConsoleKey.W:
-                                    if (!category) category = true;
-                                    break;
-                                case ConsoleKey.S:
-                                    if (category) category = false;
-                                    break;
-                                case ConsoleKey.Enter:
-                                    break;
-                                case ConsoleKey.Spacebar:
-                                    if (category)
+                                    else
                                     {
                                         if (ownProperty)
                                         {
-                                            Quartal quartal = player.property[marker1];
-                                            if (yourProperty.Contains(quartal))
+                                            if (playerLiberationCount < trader.liberation) playerLiberationCount++;
+                                        }
+                                        else
+                                        {
+                                            if (traderLiberationCount < trader.liberation) traderLiberationCount++;
+                                        }
+                                    }
+                                    break;
+                                case ConsoleKey.W:
+                                    if (category == false) category = null;
+                                    else if (category == null) category = true;
+                                    break;
+                                case ConsoleKey.S:
+                                    if (category == true) category = null;
+                                    else if (category == null) category = false;
+                                    break;
+                                case ConsoleKey.Enter:
+                                    int index = 0;
+                                    for (; index < players.Length; index++)
+                                    {
+                                        if (players[index] == trader) break;
+                                    }
+                                    PrintPlayers(index);
+                                    ClearMenu();
+                                    Console.SetCursorPosition(165, 50);
+                                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                                    Console.SetCursorPosition(165, 51);
+                                    int spaces, left, right;
+                                    spaces = 34 - trader.name.Length;
+                                    left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
+                                    right = Convert.ToInt32(Math.Floor(spaces / 2.0));
+                                    Console.Write("║ ");
+                                    for (int i = 0; i < left; i++) Console.Write(" ");
+                                    Console.Write($"{trader.name}, примите ли Вы эту сделку?");
+                                    for (int i = 0; i < right; i++) Console.Write(" ");
+                                    Console.Write(" ║");
+                                    Console.SetCursorPosition(165, 52);
+                                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                                    Console.SetCursorPosition(165, 53);
+                                    Console.Write("║ Enter – Принять сделку                  Esc – Отменить сделку ║");
+                                    while (trading)
+                                    {
+                                        Console.SetCursorPosition(165, 54);
+                                        if (musicMuted)
+                                        {
+                                            Console.Write("║                      M – Включить музыку                      ║");
+                                        }
+                                        else
+                                        {
+                                            Console.Write("║                      M – Заглушить музыку                     ║");
+                                        }
+                                        Console.SetCursorPosition(165, 55);
+                                        Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                                        switch (Console.ReadKey(true).Key)
+                                        {
+                                            case ConsoleKey.Enter:
+                                                player.balance -= yourMoney;
+                                                trader.balance -= traderMoney;
+                                                player.property = player.property.Concat(traderProperty).Except(playerProperty).ToArray();
+                                                trader.property = trader.property.Concat(playerProperty).Except(traderProperty).ToArray();
+                                                foreach (Quartal p in playerProperty)
+                                                {
+                                                    p.owner = trader;
+                                                    IncreaseColor(p, trader);
+                                                    DecreaseColor(p, player);
+                                                }
+                                                foreach (Quartal p in traderProperty)
+                                                {
+                                                    p.owner = player;
+                                                    IncreaseColor(p, player);
+                                                    DecreaseColor(p, trader);
+                                                }
+                                                trading = false;
+                                                break;
+                                            case ConsoleKey.Escape:
+                                                trading = false;
+                                                break;
+                                            case ConsoleKey.M:
+                                                if (musicMuted)
+                                                {
+                                                    musicMuted = false;
+                                                    musicPlayer.PlayLooping();
+                                                }
+                                                else
+                                                {
+                                                    musicMuted = true;
+                                                    musicPlayer.Stop();
+                                                }
+                                                break;
+                                        }
+                                    }
+                                    break;
+                                case ConsoleKey.Spacebar:
+                                    if (category == true)
+                                    {
+                                        if (ownProperty)
+                                        {
+                                            if (marker1 != -1)
                                             {
-                                                yourProperty = yourProperty.Where(q => !q.Equals(quartal)).ToArray();
-                                            }
-                                            else
-                                            {
-                                                yourProperty = yourProperty.Append(quartal).ToArray();
+                                                Quartal quartal = player.property[marker1];
+                                                if (playerProperty.Contains(quartal))
+                                                {
+                                                    playerProperty.Remove(quartal);
+                                                }
+                                                else
+                                                {
+                                                    playerProperty.Add(quartal);
+                                                }
                                             }
                                         }
                                         else
                                         {
-                                            Quartal quartal = trader.property[marker2];
-                                            if (traderProperty.Contains(quartal))
+                                            if (marker2 != -1)
                                             {
-                                                traderProperty = traderProperty.Where(q => !q.Equals(quartal)).ToArray();
-                                            }
-                                            else
-                                            {
-                                                traderProperty = traderProperty.Append(quartal).ToArray();
+                                                Quartal quartal = trader.property[marker2];
+                                                if (traderProperty.Contains(quartal))
+                                                {
+                                                    traderProperty.Remove(quartal);
+                                                }
+                                                else
+                                                {
+                                                    traderProperty.Add(quartal);
+                                                }
                                             }
                                         }
                                     }
@@ -2274,11 +2428,90 @@ namespace Monopoly
             Console.Write("                                                                 ");
         }
 
+        static public void PrintRealty(Player player)
+        {
+
+        }
+
+        static public void IncreaseColor(Quartal quartal, Player player)
+        {
+            switch (quartal.color)
+            {
+                case ConsoleColor.Black:
+                    player.black++;
+                    break;
+                case ConsoleColor.Gray:
+                    player.gray++;
+                    break;
+                case ConsoleColor.Yellow:
+                    player.yellow++;
+                    break;
+                case ConsoleColor.DarkYellow:
+                    player.darkYellow++;
+                    break;
+                case ConsoleColor.DarkGreen:
+                    player.darkGreen++;
+                    break;
+                case ConsoleColor.Green:
+                    player.green++;
+                    break;
+                case ConsoleColor.Red:
+                    player.red++;
+                    break;
+                case ConsoleColor.Magenta:
+                    player.magenta++;
+                    break;
+                case ConsoleColor.Blue:
+                    player.blue++;
+                    break;
+                case ConsoleColor.Cyan:
+                    player.cyan++;
+                    break;
+            }
+        }
+
+        static public void DecreaseColor(Quartal quartal, Player player)
+        {
+            switch (quartal.color)
+            {
+                case ConsoleColor.Black:
+                    player.black--;
+                    break;
+                case ConsoleColor.Gray:
+                    player.gray--;
+                    break;
+                case ConsoleColor.Yellow:
+                    player.yellow--;
+                    break;
+                case ConsoleColor.DarkYellow:
+                    player.darkYellow--;
+                    break;
+                case ConsoleColor.DarkGreen:
+                    player.darkGreen--;
+                    break;
+                case ConsoleColor.Green:
+                    player.green--;
+                    break;
+                case ConsoleColor.Red:
+                    player.red--;
+                    break;
+                case ConsoleColor.Magenta:
+                    player.magenta--;
+                    break;
+                case ConsoleColor.Blue:
+                    player.blue--;
+                    break;
+                case ConsoleColor.Cyan:
+                    player.cyan--;
+                    break;
+            }
+        }
+
         /// <summary>
         /// Вывод меню действий
         /// </summary>
         /// <param name="player">Ходящий игрок</param>
-        static public int Menu(Player player)
+        static public void Menu(Player player, int turn)
         {
             bool doubled = false;
             while (true)
@@ -2311,6 +2544,7 @@ namespace Monopoly
                 switch (Console.ReadKey(true).Key)
                 {
                     case ConsoleKey.Spacebar:
+                        DBL:
                         ClearMenu();
                         dice1 = rnd.Next(1, 7);
                         dice2 = rnd.Next(1, 7);
@@ -2322,7 +2556,7 @@ namespace Monopoly
                                 PrintDices(dice1, dice2, 0);
                                 player.escapeAttempts++;
                                 Thread.Sleep(1500);
-                                return 0;
+                                goto END;
                             }
                             player.prisoned = false;
                             player.escapeAttempts = 0;
@@ -2340,7 +2574,7 @@ namespace Monopoly
                                 quartals[30].visitors--;
                                 player.position = 10;
                                 doubles = 0;
-                                return 0;
+                                goto END;
                             }
                             else
                             {
@@ -2365,14 +2599,71 @@ namespace Monopoly
                             if (quartal.special == 1)
                             {
                                 Treasury(player);
+                                if (player.prisoned) goto END;
                             }
                             else if (quartal.special == 2)
                             {
                                 Chance(player);
+                                if (player.prisoned) goto END;
                             }
                             else if (quartal.special == 3)
                             {
-                                // Todo: Написать о том, что игрок пришёл, как посетитель
+                                while (true)
+                                {
+                                    ClearMenu();
+                                    Console.SetCursorPosition(165, 50);
+                                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                                    Console.SetCursorPosition(165, 51);
+                                    Console.Write("║      Вам пришла мысль проведать знакомого. Вы посетитель      ║");
+                                    Console.SetCursorPosition(165, 52);
+                                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                                    Console.SetCursorPosition(165, 53);
+                                    if (doubled)
+                                    {
+                                        Console.Write("║ Пробел – Бросить кубики         Tab – Посмотреть недвижимость ║");
+                                    }
+                                    else
+                                    {
+                                        Console.Write("║ Enter – Закончить ход           Tab – Посмотреть недвижимость ║");
+                                    }
+                                    Console.SetCursorPosition(165, 54);
+                                    if (musicMuted)
+                                    {
+                                        Console.Write("║ T – Предложить обмен                      M – Включить музыку ║");
+                                    }
+                                    else
+                                    {
+                                        Console.Write("║ T – Предложить обмен                     M – Заглушить музыку ║");
+                                    }
+                                    Console.SetCursorPosition(165, 55);
+                                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                                    switch (Console.ReadKey(true).Key)
+                                    {
+                                        case ConsoleKey.Spacebar:
+                                            if (doubled) goto DBL;
+                                            break;
+                                        case ConsoleKey.Enter:
+                                            if (!doubled) goto END;
+                                            break;
+                                        case ConsoleKey.Tab:
+                                            break;
+                                        case ConsoleKey.T:
+                                            Trade(player);
+                                            break;
+                                        case ConsoleKey.M:
+                                            if (musicMuted)
+                                            {
+                                                musicMuted = false;
+                                                musicPlayer.PlayLooping();
+                                            }
+                                            else
+                                            {
+                                                musicMuted = true;
+                                                musicPlayer.Stop();
+                                            }
+                                            break;
+                                    }
+                                }
                             }
                             else if (quartal.special == 4)
                             {
@@ -2386,15 +2677,121 @@ namespace Monopoly
                                 quartals[30].visitors--;
                                 player.position = 10;
                                 doubles = 0;
-                                return 0;
+                                goto END;
                             }
-                            else if (quartal.special == 6)
+                            else if (quartal.special == 6 || quartal.special == 7 || quartal.special == -1)
                             {
-                                // Todo: Купить порт или выставить на аукцион
-                            }
-                            else if (quartal.special == 7)
-                            {
-                                // Todo: Купить коммунальное предприятие или выставить на аукцион
+                                PrintCard(quartal);
+                                while (true)
+                                {
+                                    ClearMenu();
+                                    Console.SetCursorPosition(165, 50);
+                                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                                    Console.SetCursorPosition(165, 51);
+                                    Console.Write("║                Купить или выставить на аукцион?               ║");
+                                    Console.SetCursorPosition(165, 52);
+                                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                                    Console.SetCursorPosition(165, 53);
+                                    Console.Write("║ ");
+                                    if (quartal.cost > player.balance) Console.ForegroundColor = ConsoleColor.DarkGray;
+                                    Console.Write("Пробел – Купить");
+                                    Console.ForegroundColor = ConsoleColor.Black;
+                                    Console.Write("                  Enter – Выставить на аукцион ║");
+                                    Console.SetCursorPosition(165, 54);
+                                    if (musicMuted)
+                                    {
+                                        Console.Write("║                      M – Включить музыку                      ║");
+                                    }
+                                    else
+                                    {
+                                        Console.Write("║                      M – Заглушить музыку                     ║");
+                                    }
+                                    Console.SetCursorPosition(165, 55);
+                                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                                    switch (Console.ReadKey(true).Key)
+                                    {
+                                        case ConsoleKey.Spacebar:
+                                            if (quartal.cost <= player.balance) 
+                                            {
+                                                Purchase(player, quartal);
+                                                PrintPlayers(turn);
+                                                while (true)
+                                                {
+                                                    ClearMenu();
+                                                    Console.SetCursorPosition(165, 50);
+                                                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                                                    Console.SetCursorPosition(165, 51);
+                                                    Console.Write("║                              МЕНЮ                             ║");
+                                                    Console.SetCursorPosition(165, 52);
+                                                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                                                    Console.SetCursorPosition(165, 53);
+                                                    if (doubled)
+                                                    {
+                                                        Console.Write("║ Пробел – Бросить кубики         Tab – Посмотреть недвижимость ║");
+                                                    }
+                                                    else
+                                                    {
+                                                        Console.Write("║ Enter – Закончить ход           Tab – Посмотреть недвижимость ║");
+                                                    }
+                                                    Console.SetCursorPosition(165, 54);
+                                                    if (musicMuted)
+                                                    {
+                                                        Console.Write("║ T – Предложить обмен                      M – Включить музыку ║");
+                                                    }
+                                                    else
+                                                    {
+                                                        Console.Write("║ T – Предложить обмен                     M – Заглушить музыку ║");
+                                                    }
+                                                    Console.SetCursorPosition(165, 55);
+                                                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                                                    switch (Console.ReadKey(true).Key)
+                                                    {
+                                                        case ConsoleKey.Spacebar:
+                                                            if (doubled) goto DBL;
+                                                            break;
+                                                        case ConsoleKey.Enter:
+                                                            if (!doubled) goto END;
+                                                            break;
+                                                        case ConsoleKey.Tab:
+                                                            PrintRealty(player);
+                                                            break;
+                                                        case ConsoleKey.T:
+                                                            Trade(player);
+                                                            break;
+                                                        case ConsoleKey.M:
+                                                            if (musicMuted)
+                                                            {
+                                                                musicMuted = false;
+                                                                musicPlayer.PlayLooping();
+                                                            }
+                                                            else
+                                                            {
+                                                                musicMuted = true;
+                                                                musicPlayer.Stop();
+                                                            }
+                                                            break;
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                        case ConsoleKey.Enter:
+                                            PrintTitle();
+                                            Auction(quartal);
+                                            break;
+                                        case ConsoleKey.M:
+                                            if (musicMuted)
+                                            {
+                                                musicMuted = false;
+                                                musicPlayer.PlayLooping();
+                                            }
+                                            else
+                                            {
+                                                musicMuted = true;
+                                                musicPlayer.Stop();
+                                            }
+                                            break;
+                                    }
+                                }
                             }
                             else if (quartal.special == 8)
                             {
@@ -2445,7 +2842,14 @@ namespace Monopoly
                                                     Console.SetCursorPosition(165, 52);
                                                     Console.Write("╠═══════════════════════════════════════════════════════════════╣");
                                                     Console.SetCursorPosition(165, 53);
-                                                    Console.Write("║ Enter – Закончить ход           Tab – Посмотреть недвижимость ║");
+                                                    if (doubled)
+                                                    {
+                                                        Console.Write("║ Пробел – Бросить кубики         Tab – Посмотреть недвижимость ║");
+                                                    }
+                                                    else
+                                                    {
+                                                        Console.Write("║ Enter – Закончить ход           Tab – Посмотреть недвижимость ║");
+                                                    }
                                                     Console.SetCursorPosition(165, 54);
                                                     if (musicMuted)
                                                     {
@@ -2457,12 +2861,16 @@ namespace Monopoly
                                                     }
                                                     Console.SetCursorPosition(165, 55);
                                                     Console.Write("╚═══════════════════════════════════════════════════════════════╝");
-                                                    switch(Console.ReadKey().Key)
+                                                    switch(Console.ReadKey(true).Key)
                                                     {
+                                                        case ConsoleKey.Spacebar:
+                                                            if (doubled) goto DBL;
+                                                            break;
                                                         case ConsoleKey.Enter:
-                                                            if (doubled) return 1;
-                                                            return 0;
+                                                            if (!doubled) goto END;
+                                                            break;
                                                         case ConsoleKey.Tab:
+                                                            PrintRealty(player);
                                                             break;
                                                         case ConsoleKey.T:
                                                             Trade(player);
@@ -2484,6 +2892,7 @@ namespace Monopoly
                                             }
                                             break;
                                         case ConsoleKey.Tab:
+                                            PrintRealty(player);
                                             break;
                                         case ConsoleKey.T:
                                             Trade(player);
@@ -2502,22 +2911,19 @@ namespace Monopoly
                                             break;
                                         case ConsoleKey.End:
                                             player.Bankrupt(null);
-                                            return 0;
+                                            goto END;
                                     }
                                 }
                             }
-                            else
-                            {
-                                // Todo: Купить улицу или выставить на аукцион
-                            }
-                            if (doubled) return 1;
-                            return 0;
+                            if (doubled) goto DBL;
+                            goto END;
                         }
                         break;
                     case ConsoleKey.T:
                         Trade(player);
                         break;
                     case ConsoleKey.Tab:
+                        PrintRealty(player);
                         break;
                     case ConsoleKey.M:
                         if (musicMuted)
@@ -2532,12 +2938,16 @@ namespace Monopoly
                         }
                         break;
                     case ConsoleKey.P:
-                        player.prisoned = false;
-                        player.balance -= 50;
-                        moneyPlayer.Play();
-                        return 1;
+                        if (player.prisoned)
+                        {
+                            player.prisoned = false;
+                            player.balance -= 50;
+                            goto DBL;
+                        }
+                        break;
                 }
             }
+            END:;
         }
 
         /// <summary>
@@ -2547,16 +2957,18 @@ namespace Monopoly
         /// <param name="quartal">Покупаемая улица</param>
         static public void Purchase(Player player, Quartal quartal)
         {
-            player.balance -= quartal.cost;
+            moneyPlayer.Position = TimeSpan.Zero;
             moneyPlayer.Play();
+            player.balance -= quartal.cost;
             player.property = player.property.Append(quartal).ToArray();
             quartal.owner = player;
+            IncreaseColor(quartal, player);
         }
 
         /// <summary>
         /// Выставление улицы на аукцион. Игроки по очереди повышают ставки, начиная со стоимости улицы. Те, у кого нет денег на ставку выше, аннулируют ставку автоматически
         /// </summary>
-        /// <param name="quartal">Выставляемая улица</param>
+        /// <param name="quartal">Выставляемая на аукцион улица</param>
         static public void Auction(Quartal quartal)
         {
             int spaces, left, right;
@@ -2581,7 +2993,16 @@ namespace Monopoly
                     right = Convert.ToInt32(Math.Floor(spaces / 2.0));
                     Console.Write("║");
                     for (int j = 0; j < left; j++) Console.Write(" ");
+                    if (quartal.special == 6)
+                    {
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+                    else if (quartal.special == 7) Console.BackgroundColor = ConsoleColor.Gray;
+                    else Console.BackgroundColor = quartal.color;
                     Console.Write(quartal.name);
+                    Console.BackgroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = ConsoleColor.Black;
                     for (int j = 0; j < right; j++) Console.Write(" ");
                     Console.Write("║");
                     Console.SetCursorPosition(69, 28);
@@ -2589,10 +3010,7 @@ namespace Monopoly
                     Console.SetCursorPosition(69, 29);
                     Console.Write("║ ");
                     if (quartal.cost < 100) Console.Write(" ");
-                    Console.Write("Начальная цена: ");
-                    if (bid > quartal.cost) Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Write($"{quartal.cost}$");
-                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.Write($"Начальная цена: {quartal.cost}$");
                     Console.Write(" ║");
                     PrintPlayers(i);
                     Console.SetCursorPosition(69, 30);
@@ -2618,61 +3036,72 @@ namespace Monopoly
                     Console.SetCursorPosition(69, 32);
                     Console.Write("╚══════════════════════╝");
 
-                    Console.SetCursorPosition(165, 50);
-                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
-                    Console.SetCursorPosition(165, 51);
-                    Console.Write("║                              МЕНЮ                             ║");
-                    Console.SetCursorPosition(165, 52);
-                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
-                    Console.SetCursorPosition(165, 53);
-                    Console.Write("║ ");
-                    if (participant.balance >= 1) Console.Write("Tab – Поставить 1$");
-                    else Console.Write("                  ");
-                    if (participant.balance >= 10) Console.Write("                      Enter – Поставить 10$ ║");
-                    else Console.Write("                                            ║");
-                    Console.SetCursorPosition(165, 54);
-                    Console.Write("║ ");
-                    if (participant.balance >= 100) Console.Write("Пробел – Поставить 100$");
-                    else Console.Write("                       ");
-                    Console.Write("       Backspace – Аннулировать ставку ║");
-                    Console.SetCursorPosition(165, 55);
-                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
-                    while (true)
+                    if (participants > 1)
                     {
-                        switch (Console.ReadKey(true).Key)
+                        Console.SetCursorPosition(165, 50);
+                        Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                        Console.SetCursorPosition(165, 51);
+                        Console.Write("║                              МЕНЮ                             ║");
+                        Console.SetCursorPosition(165, 52);
+                        Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                        Console.SetCursorPosition(165, 53);
+                        Console.Write("║ ");
+                        if (participant.balance >= 1) Console.Write("Tab – Поставить 1$");
+                        else Console.Write("                  ");
+                        if (participant.balance >= 10) Console.Write("                      Enter – Поставить 10$ ║");
+                        else Console.Write("                                            ║");
+                        Console.SetCursorPosition(165, 54);
+                        Console.Write("║ ");
+                        if (participant.balance >= 100) Console.Write("Пробел – Поставить 100$");
+                        else Console.Write("                       ");
+                        Console.Write("       Backspace – Аннулировать ставку ║");
+                        Console.SetCursorPosition(165, 55);
+                        Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+
+                        while (!participant.didBid)
                         {
-                            case ConsoleKey.Tab:
-                                if (participant.balance >= 1)
-                                {
-                                    bid++;
-                                    buyer = participant;
+                            switch (Console.ReadKey(true).Key)
+                            {
+                                case ConsoleKey.Tab:
+                                    if (participant.balance >= 1)
+                                    {
+                                        bid++;
+                                        buyer = participant;
+                                        participant.didBid = true;
+                                        goto End;
+                                    }
+                                    break;
+                                case ConsoleKey.Enter:
+                                    if (participant.balance >= 10)
+                                    {
+                                        bid += 10;
+                                        buyer = participant;
+                                        participant.didBid = true;
+                                        goto End;
+                                    }
+                                    break;
+                                case ConsoleKey.Spacebar:
+                                    if (participant.balance >= 100)
+                                    {
+                                        bid += 100;
+                                        buyer = participant;
+                                        participant.didBid = true;
+                                        goto End;
+                                    }
+                                    break;
+                                case ConsoleKey.Backspace:
+                                    participants--;
+                                    participant.canselled = true;
                                     goto End;
-                                }
-                                break;
-                            case ConsoleKey.Enter:
-                                if (participant.balance >= 10)
-                                {
-                                    bid += 10;
-                                    buyer = participant;
-                                    goto End;
-                                }
-                                break;
-                            case ConsoleKey.Spacebar:
-                                if (participant.balance >= 100)
-                                {
-                                    bid += 100;
-                                    buyer = participant;
-                                    goto End;
-                                }
-                                break;
-                            case ConsoleKey.Backspace:
-                                participants--;
-                                participant.canselled = true;
-                                goto End;
+                            }
                         }
                     }
-                    End:;
+                    else
+                    {
+
+                    }
                 }
+            End:;
             } while (participants > 1);
 
             if (buyer != null)
@@ -2680,11 +3109,11 @@ namespace Monopoly
                 quartal.owner = buyer;
                 buyer.property = buyer.property.Append(quartal).ToArray();
                 buyer.balance -= bid;
-                moneyPlayer.Play();
             }
             for (int i = 0; i < playersCount; i++)
             {
                 players[i].canselled = false;
+                players[i].didBid = false;
             }
             PrintTitle();
         }
@@ -2706,11 +3135,9 @@ namespace Monopoly
                 // ToDo: SetCursorPosition + WriteLine
                 case 0:
                     player.balance += 25;
-                    moneyPlayer.Play();
                     break;
                 case 1:
                     player.balance -= 50;
-                    moneyPlayer.Play();
                     break;
                 case 2:
                     for (int i = player.position; i > 1; i--)
@@ -2724,7 +3151,6 @@ namespace Monopoly
                     break;
                 case 3:
                     player.balance -= 50;
-                    moneyPlayer.Play();
                     break;
                 case 4:
                     player.liberation++;
@@ -2739,46 +3165,37 @@ namespace Monopoly
                     break;
                 case 6:
                     player.balance -= 100;
-                    moneyPlayer.Play();
                     break;
                 case 7:
                     // ToDo: -10 || chance
                     break;
                 case 8:
                     player.balance += 25;
-                    moneyPlayer.Play();
                     break;
                 case 9:
                     player.balance += 25;
-                    moneyPlayer.Play();
                     break;
                 case 10:
                     player.balance += 50;
-                    moneyPlayer.Play();
                     break;
                 case 11:
                     for (int i = 0; i < playersCount; i++)
                     {
                         players[i].balance -= 10;
                         player.balance += 10;
-                        moneyPlayer.Play();
                     }
                     break;
                 case 12:
                     player.balance += 200;
-                    moneyPlayer.Play();
                     break;
                 case 13:
                     player.balance += 100;
-                    moneyPlayer.Play();
                     break;
                 case 14:
                     player.balance += 10;
-                    moneyPlayer.Play();
                     break;
                 case 15:
                     player.balance += 100;
-                    moneyPlayer.Play();
                     break;
             }
         }
@@ -2801,7 +3218,6 @@ namespace Monopoly
                 // ToDo: SetCursorPosition + WriteLine
                 case 0:
                     player.balance -= 40 * player.housesCount + 115 * player.hotelsCount;
-                    moneyPlayer.Play();
                     break;
                 case 1:
                     quartals[10].visitors++;
@@ -2812,7 +3228,6 @@ namespace Monopoly
                     break;
                 case 2:
                     player.balance -= 20;
-                    moneyPlayer.Play();
                     break;
                 case 3:
                     for (int j = position; j != (position + 37) % 40;)
@@ -2832,11 +3247,9 @@ namespace Monopoly
                     break;
                 case 5:
                     player.balance += 150;
-                    moneyPlayer.Play();
                     break;
                 case 6:
                     player.balance += 50;
-                    moneyPlayer.Play();
                     break;
                 case 7:
                     position = player.position;
@@ -2896,8 +3309,9 @@ namespace Monopoly
             Console.SetBufferSize(Console.LargestWindowWidth, 110);
             Console.CursorVisible = false;
 
-            // Music
+            // Sounds
             musicPlayer.PlayLooping();
+            moneyPlayer.Open(new System.Uri(@"C:\Users\Class_Student\source\repos\Monopoly\Resources\money.wav"));
 
             // Shuffle
             int cards = 16;
@@ -3071,8 +3485,7 @@ namespace Monopoly
                 {
                     if (players[i].bankrupt) continue;
                     PrintPlayers(i);
-                    i -= Menu(players[i]);
-                    PrintTitle();
+                    Menu(players[i], i);
                 }
             }
         }

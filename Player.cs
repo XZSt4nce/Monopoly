@@ -67,6 +67,10 @@
         /// Аннулировал ли ставку игрок на аукционе. По умолчанию – false
         /// </summary>
         public bool canselled;
+        /// <summary>
+        /// Делал ли ставку игрок на аукционе. По умолчанию – false
+        /// </summary>
+        public bool didBid;
         public bool prisoned;
         public bool bankrupt;
         public Player(string _name, char _piece)
