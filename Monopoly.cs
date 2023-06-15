@@ -22,8 +22,8 @@ namespace Monopoly
         static readonly int sleep = 400;
         static int dice1, dice2;
         static int doubles = 0;
-        static SoundPlayer musicPlayer = new SoundPlayer(Resources.music);
-        static MediaPlayer moneyPlayer = new MediaPlayer();
+        static readonly SoundPlayer musicPlayer = new SoundPlayer(Resources.music);
+        static readonly MediaPlayer moneyPlayer = new MediaPlayer();
         static public Player[] players;
         static public Quartal[] quartals = new Quartal[40]
         {
@@ -1208,6 +1208,7 @@ namespace Monopoly
             left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
             right = Convert.ToInt32(Math.Floor(spaces / 2.0));
 
+            PrintTitle();
             Console.SetCursorPosition(column, row++);
             Console.Write("╔═════════════════════════════════════════════════════════════════════════════════════════════════════════════╗");
             Console.SetCursorPosition(column, row++);
@@ -1274,7 +1275,6 @@ namespace Monopoly
         static public void PrintProperty(
             Player player, Player trader,
             List<Quartal> playerProperty, List<Quartal> traderProperty,
-            int playerPropertyCount, int traderPropertyCount,
             int playerMoney, int traderMoney,
             int marker1, int marker2,
             bool ownProperty, bool? category,
@@ -1282,10 +1282,15 @@ namespace Monopoly
         {
             string[] give = new string[10];
             string[] take = new string[10];
+            for (int i = 0; i < 10; i++)
+            {
+                give[i] = "";
+                take[i] = "";
+            }
             int gRows = 0;
             int tRows = 0;
 
-            if (playerPropertyCount == 0)
+            if (playerProperty.Count() == 0)
             {
                 if (playerMoney > 0)
                 {
@@ -1296,13 +1301,13 @@ namespace Monopoly
             else
             {
                 gRows = 1;
-                for (int i = 0; i < playerPropertyCount - 1; i++)
+                for (int i = 0; i < playerProperty.Count() - 1; i++)
                 {
                     if (give[gRows - 1].Length + playerProperty[i].name.Length + 2 > 89) gRows++;
                     give[gRows - 1] += $"{playerProperty[i].name}, ";
                 }
-                if (give[gRows - 1].Length + playerProperty[playerPropertyCount - 1].name.Length > 89) gRows++;
-                give[gRows - 1] += playerProperty[playerPropertyCount - 1].name;
+                if (give[gRows - 1].Length + playerProperty[playerProperty.Count() - 1].name.Length > 89) gRows++;
+                give[gRows - 1] += playerProperty[playerProperty.Count() - 1].name;
                 if (playerMoney > 0)
                 {
                     if (give[gRows - 1].Length + 2 > 89) gRows++;
@@ -1312,7 +1317,7 @@ namespace Monopoly
                 }
             }
 
-            if (traderPropertyCount == 0)
+            if (traderProperty.Count() == 0)
             {
                 if (traderMoney > 0)
                 {
@@ -1323,19 +1328,19 @@ namespace Monopoly
             else
             {
                 tRows = 1;
-                for (int i = 0; i < traderPropertyCount - 1; i++)
+                for (int i = 0; i < traderProperty.Count() - 1; i++)
                 {
                     if (take[tRows - 1].Length + traderProperty[i].name.Length + 2 > 89) tRows++;
                     take[tRows - 1] += $"{traderProperty[i].name}, ";
                 }
-                if (take[tRows - 1].Length + traderProperty[traderPropertyCount - 1].name.Length > 89) tRows++;
-                take[tRows - 1] += traderProperty[traderPropertyCount - 1].name;
+                if (take[tRows - 1].Length + traderProperty[traderProperty.Count() - 1].name.Length > 89) tRows++;
+                take[tRows - 1] += traderProperty[traderProperty.Count() - 1].name;
                 if (traderMoney > 0)
                 {
                     if (take[tRows - 1].Length + 2 > 89) tRows++;
                     take[tRows - 1] += " и";
                     if (take[tRows - 1].Length + Convert.ToString(traderMoney).Length + 2 > 89) tRows++;
-                    take[tRows - 1] += $"{traderMoney}$";
+                    take[tRows - 1] += $" {traderMoney}$";
                 }
             }
 
@@ -1607,8 +1612,6 @@ namespace Monopoly
                                           trader,
                                           playerProperty,
                                           traderProperty,
-                                          playerPropertyCount,
-                                          traderPropertyCount,
                                           yourMoney,
                                           traderMoney,
                                           marker1,
@@ -1811,8 +1814,8 @@ namespace Monopoly
                                             case ConsoleKey.Enter:
                                                 player.balance -= yourMoney;
                                                 trader.balance -= traderMoney;
-                                                player.property = player.property.Concat(traderProperty).Except(playerProperty).ToArray();
-                                                trader.property = trader.property.Concat(playerProperty).Except(traderProperty).ToArray();
+                                                player.property = player.property.Concat(traderProperty).Except(playerProperty).ToList<Quartal>();
+                                                trader.property = trader.property.Concat(playerProperty).Except(traderProperty).ToList<Quartal>();
                                                 foreach (Quartal p in playerProperty)
                                                 {
                                                     p.owner = trader;
@@ -2960,7 +2963,7 @@ namespace Monopoly
             moneyPlayer.Position = TimeSpan.Zero;
             moneyPlayer.Play();
             player.balance -= quartal.cost;
-            player.property = player.property.Append(quartal).ToArray();
+            player.property.Add(quartal);
             quartal.owner = player;
             IncreaseColor(quartal, player);
         }
@@ -2984,6 +2987,7 @@ namespace Monopoly
                 for (int i = 0; i < playersCount; i++)
                 {
                     Player participant = players[i];
+                    if (participant.balance < bid) participant.canselled = true;
                     if (participant.canselled) continue;
                     Console.SetCursorPosition(69, 26);
                     Console.Write("╔══════════════════════╗");
@@ -3041,7 +3045,7 @@ namespace Monopoly
                         Console.SetCursorPosition(165, 50);
                         Console.Write("╔═══════════════════════════════════════════════════════════════╗");
                         Console.SetCursorPosition(165, 51);
-                        Console.Write("║                              МЕНЮ                             ║");
+                        Console.Write("║                            АУКЦИОН                            ║");
                         Console.SetCursorPosition(165, 52);
                         Console.Write("╠═══════════════════════════════════════════════════════════════╣");
                         Console.SetCursorPosition(165, 53);
@@ -3098,7 +3102,62 @@ namespace Monopoly
                     }
                     else
                     {
+                        if (participant.didBid)
+                        {
+                            buyer = participant;
+                        }
+                        else
+                        {
+                            Console.SetCursorPosition(165, 50);
+                            Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                            Console.SetCursorPosition(165, 51);
+                            Console.Write("║                            АУКЦИОН                            ║");
+                            Console.SetCursorPosition(165, 52);
+                            Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                            Console.SetCursorPosition(165, 53);
+                            Console.Write("║ Enter – Купить за                Esc – Отказаться от сделки   ║");
 
+                            bool notChoosen = true;
+                            while (notChoosen)
+                            {
+                                Console.SetCursorPosition(165, 54);
+                                if (musicMuted)
+                                {
+                                    Console.Write("║                      M – Включить музыку                      ║");
+                                }
+                                else
+                                {
+                                    Console.Write("║                      M – Заглушить музыку                     ║");
+                                }
+                                Console.SetCursorPosition(165, 55);
+                                Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                                Console.SetCursorPosition(185, 53);
+                                Console.Write($"{bid}$");
+                                switch (Console.ReadKey(true).Key)
+                                {
+                                    case ConsoleKey.Enter:
+                                        //but
+                                        //notChoosen = true;
+                                        break;
+                                    case ConsoleKey.Escape:
+                                        notChoosen = true;
+                                        break;
+                                    case ConsoleKey.M:
+                                        if (musicMuted)
+                                        {
+                                            musicMuted = false;
+                                            musicPlayer.PlayLooping();
+                                        }
+                                        else
+                                        {
+                                            musicMuted = true;
+                                            musicPlayer.Stop();
+                                        }
+                                        break;
+                                }
+                            }
+                        }
+                        
                     }
                 }
             End:;
@@ -3107,7 +3166,7 @@ namespace Monopoly
             if (buyer != null)
             {
                 quartal.owner = buyer;
-                buyer.property = buyer.property.Append(quartal).ToArray();
+                buyer.property.Add(quartal);
                 buyer.balance -= bid;
             }
             for (int i = 0; i < playersCount; i++)

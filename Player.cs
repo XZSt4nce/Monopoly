@@ -1,4 +1,6 @@
-﻿namespace Monopoly
+﻿using System.Collections.Generic;
+
+namespace Monopoly
 {
     public class Player
     {
@@ -6,7 +8,7 @@
         public char piece;
         public int balance;
         public int position;
-        public Quartal[] property;
+        public List<Quartal> property;
         /// <summary>
         /// Количество построенных домов на улицах игрока
         /// </summary>
@@ -79,7 +81,7 @@
             piece = _piece;
             balance = 1500;
             position = 0;
-            property = new Quartal[40];
+            property = new List<Quartal>();
             housesCount = 0;
             hotelsCount = 0;
             yellow = 0;
