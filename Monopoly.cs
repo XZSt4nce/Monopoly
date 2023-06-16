@@ -16,14 +16,19 @@ namespace Monopoly
     {
         static public int playersCount;
         static public int remaining;
-        static public int[] treasuries = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-        static public int[] chances = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+        static public List<int> treasuries = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+        static public List<int> chances = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
         static public bool musicMuted = false;
         static readonly int sleep = 400;
         static int dice1, dice2;
         static int doubles = 0;
+        static bool doubled = false;
         static readonly SoundPlayer musicPlayer = new SoundPlayer(Resources.music);
         static readonly MediaPlayer moneyPlayer = new MediaPlayer();
+        static readonly MediaPlayer policePlayer = new MediaPlayer();
+        static readonly MediaPlayer paperPlayer = new MediaPlayer();
+        static readonly MediaPlayer happyPlayer = new MediaPlayer();
+        static readonly MediaPlayer sadPlayer = new MediaPlayer();
         static public Player[] players;
         static public Quartal[] quartals = new Quartal[40]
         {
@@ -1208,7 +1213,6 @@ namespace Monopoly
             left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
             right = Convert.ToInt32(Math.Floor(spaces / 2.0));
 
-            PrintTitle();
             Console.SetCursorPosition(column, row++);
             Console.Write("╔═════════════════════════════════════════════════════════════════════════════════════════════════════════════╗");
             Console.SetCursorPosition(column, row++);
@@ -1829,9 +1833,11 @@ namespace Monopoly
                                                     DecreaseColor(p, trader);
                                                 }
                                                 trading = false;
+                                                trading2 = false;
                                                 break;
                                             case ConsoleKey.Escape:
                                                 trading = false;
+                                                trading2 = false;
                                                 break;
                                             case ConsoleKey.M:
                                                 if (musicMuted)
@@ -2510,14 +2516,337 @@ namespace Monopoly
             }
         }
 
+        static public int Rent(Quartal quartal, int dicePoints)
+        {
+            bool isMonopoly = false;
+            Player owner = quartal.owner;
+            switch (quartal.color)
+            {
+                case ConsoleColor.Yellow:
+                    if (owner.yellow == 2) isMonopoly = true;
+                    break;
+                case ConsoleColor.DarkYellow:
+                    if (owner.darkYellow == 3) isMonopoly = true;
+                    break;
+                case ConsoleColor.DarkGreen:
+                    if (owner.darkGreen == 3) isMonopoly = true;
+                    break;
+                case ConsoleColor.Green:
+                    if (owner.green == 3) isMonopoly = true;
+                    break;
+                case ConsoleColor.Red:
+                    if (owner.red == 3) isMonopoly = true;
+                    break;
+                case ConsoleColor.Magenta:
+                    if (owner.magenta == 3) isMonopoly = true;
+                    break;
+                case ConsoleColor.Blue:
+                    if (owner.blue == 3) isMonopoly = true;
+                    break;
+                case ConsoleColor.Cyan:
+                    if (owner.cyan == 2) isMonopoly = true;
+                    break;
+            }
+
+            if (isMonopoly)
+            {
+                if (quartal.color == ConsoleColor.Black)
+                {
+                    switch (owner.black)
+                    {
+                        case 1:
+                            return 25;
+                        case 2:
+                            return 50;
+                        case 3:
+                            return 100;
+                        default:
+                            return 200;
+                    }
+                }
+                else if (quartal.color == ConsoleColor.Gray)
+                {
+                    if (owner.gray == 1) return 4 * dicePoints;
+                    else return 10 * dicePoints;
+                }
+                else
+                {
+                    switch (quartal.level)
+                    {
+                        case 0:
+                            return quartal.house1Rent;
+                        case 1:
+                            return quartal.house1Rent;
+                        case 2:
+                            return quartal.house2Rent;
+                        case 3:
+                            return quartal.house3Rent;
+                        case 4:
+                            return quartal.house4Rent;
+                        default:
+                            return quartal.hotelRent;
+                    }
+                }
+            }
+            else return quartal.noMonopolyRent;
+        }
+
+        static public void BuyOrAuctionOrRent(Player player, Quartal quartal, int turn)
+        {
+            PrintCard(quartal);
+            if (quartal.owner == player)
+            {
+                ClearMenu();
+                Console.SetCursorPosition(165, 50);
+                Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                Console.SetCursorPosition(165, 51);
+                Console.Write("║                Купить или выставить на аукцион?               ║");
+                Console.SetCursorPosition(165, 52);
+                Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                Console.SetCursorPosition(165, 53);
+                Console.Write("║ ");
+                if (quartal.cost > player.balance) Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.Write("Пробел – Купить");
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.Write("                  Enter – Выставить на аукцион ║");
+                Console.SetCursorPosition(165, 54);
+                if (musicMuted)
+                {
+                    Console.Write("║                      M – Включить музыку                      ║");
+                }
+                else
+                {
+                    Console.Write("║                      M – Заглушить музыку                     ║");
+                }
+                Console.SetCursorPosition(165, 55);
+                Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                while (true)
+                {
+                    
+                    switch (Console.ReadKey(true).Key)
+                    {
+                        case ConsoleKey.Spacebar:
+                            if (quartal.cost <= player.balance)
+                            {
+                                Purchase(player, quartal);
+                                PrintTitle();
+                                PrintPlayers(turn);
+                            }
+                            break;
+                        case ConsoleKey.Enter:
+                            PrintTitle();
+                            Auction(quartal);
+                            break;
+                        case ConsoleKey.M:
+                            if (musicMuted)
+                            {
+                                musicMuted = false;
+                                musicPlayer.PlayLooping();
+                                Console.SetCursorPosition(165, 54);
+                                Console.Write("║                      M – Заглушить музыку                     ║");
+                            }
+                            else
+                            {
+                                musicMuted = true;
+                                musicPlayer.Stop();
+                                Console.SetCursorPosition(165, 54);
+                                Console.Write("║                      M – Включить музыку                      ║");
+                            }
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                if (!quartal.isMantaged)
+                {
+                    ClearMenu();
+                    int rent = Rent(quartal, dice1 + dice2);
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║");
+                    Console.SetCursorPosition(185, 51);
+                    Console.Write($"Заплатите ренту: {rent}");
+                    Console.SetCursorPosition(229, 51);
+                    Console.Write("║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 53);
+                    Console.Write("║ ");
+                    if (rent > player.balance) Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.Write($"Пробел – Заплатить {rent}");
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    if (musicMuted)
+                    {
+                        Console.SetCursorPosition(211, 53);
+                        Console.Write("M – Включить музыку ║");
+                    }
+                    else
+                    {
+                        Console.SetCursorPosition(210, 53);
+                        Console.Write("M – Заглушить музыку ║");
+                    }
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    switch (Console.ReadKey(true).Key)
+                    {
+                        case ConsoleKey.Enter:
+                            if (quartal.cost <= player.balance)
+                            {
+                                player.balance -= rent;
+                                PrintTitle();
+                                PrintPlayers(turn);
+                            }
+                            break;
+                        case ConsoleKey.M:
+                            if (musicMuted)
+                            {
+                                musicMuted = false;
+                                musicPlayer.PlayLooping();
+                            }
+                            else
+                            {
+                                musicMuted = true;
+                                musicPlayer.Stop();
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+
+        static public bool ThrowDices(Player player, int turn)
+        {
+            ClearMenu();
+            dice1 = rnd.Next(1, 7);
+            dice2 = rnd.Next(1, 7);
+            if (player.prisoned)
+            {
+                if (dice1 != dice2)
+                {
+                    PrintDices(dice1, dice2, 0);
+                    player.escapeAttempts++;
+                    Thread.Sleep(1500);
+                    if (player.escapeAttempts == 3)
+                    {
+                        Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                        Console.SetCursorPosition(165, 51);
+                        Console.Write("║                              МЕНЮ                             ║");
+                        Console.SetCursorPosition(165, 52);
+                        Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                        Console.SetCursorPosition(165, 53);
+                        Console.Write("║ ");
+                        if (player.balance < 50) Console.ForegroundColor = ConsoleColor.Gray;
+                        Console.Write("P – Заплатить 50$ за выход");
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.Write("      Tab – Посмотреть недвижимость ║");
+                        Console.SetCursorPosition(165, 54);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ T – Предложить обмен                      M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ T – Предложить обмен                     M – Заглушить музыку ║");
+                        }
+                        Console.SetCursorPosition(165, 55);
+                        Console.Write("║                 End – Объявить себя банкротом                 ║");
+                        Console.SetCursorPosition(165, 56);
+                        Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                        bool notEntered = true;
+                        while (notEntered)
+                        {
+                            while (Console.KeyAvailable)
+                            {
+                                switch (Console.ReadKey().Key) {
+                                    case ConsoleKey.T:
+                                        Trade(player);
+                                        break;
+                                    case ConsoleKey.Tab:
+                                        PrintRealty(player);
+                                        break;
+                                    case ConsoleKey.M:
+                                        if (musicMuted)
+                                        {
+                                            musicMuted = false;
+                                            musicPlayer.PlayLooping();
+                                            Console.Write("║ T – Предложить обмен                     M – Заглушить музыку ║");
+                                        }
+                                        else
+                                        {
+                                            musicMuted = true;
+                                            musicPlayer.Stop();
+                                            Console.Write("║ T – Предложить обмен                      M – Включить музыку ║");
+                                        }
+                                        break;
+                                    case ConsoleKey.P:
+                                        if (player.prisoned)
+                                        {
+                                            player.prisoned = false;
+                                            player.balance -= 50;
+                                            Menu(player, turn);
+                                        }
+                                        break;
+                                    case ConsoleKey.End:
+                                        player.Bankrupt(null);
+                                        int liberation = player.liberation;
+                                        for (int i = 0; i < liberation; i++)
+                                        {
+                                            if (treasuries.Count == 15)
+                                            {
+                                                treasuries.Add(4);
+                                                player.liberation--;
+                                            }
+                                            else
+                                            {
+                                                chances.Add(4);
+                                                player.liberation--;
+                                            }
+                                        }
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    return false;
+                }
+                player.prisoned = false;
+                player.escapeAttempts = 0;
+            }
+            if (dice1 == dice2)
+            {
+                doubles++;
+                if (doubles == 3)
+                {
+                    player.prisoned = true;
+                    quartals[10].visitors++;
+                    PrintPieces(30, 10, player.piece);
+                    quartals[30].visitors--;
+                    player.position = 10;
+                    doubles = 0;
+                    policePlayer.Position = TimeSpan.Zero;
+                    policePlayer.Play();
+                    return false;
+                }
+                else
+                {
+                    doubled = true;
+                }
+            }
+            else doubles = 0;
+            PrintDices(dice1, dice2, doubles);
+            return true;
+        }
+
         /// <summary>
         /// Вывод меню действий
         /// </summary>
         /// <param name="player">Ходящий игрок</param>
-        static public void Menu(Player player, int turn)
+        static public void Menu(Player player, int turn, bool skip = false)
         {
-            bool doubled = false;
-            while (true)
+            bool turnNotEnded = true;
+            if (skip)
             {
                 ClearMenu();
                 Console.SetCursorPosition(165, 50);
@@ -2527,7 +2856,14 @@ namespace Monopoly
                 Console.SetCursorPosition(165, 52);
                 Console.Write("╠═══════════════════════════════════════════════════════════════╣");
                 Console.SetCursorPosition(165, 53);
-                Console.Write("║ Пробел – Бросить кубики         Tab – Посмотреть недвижимость ║");
+                if (doubled)
+                {
+                    Console.Write("║ Пробел – Бросить кубики         Tab – Посмотреть недвижимость ║");
+                }
+                else
+                {
+                    Console.Write("║ Enter – Закончить ход           Tab – Посмотреть недвижимость ║");
+                }
                 Console.SetCursorPosition(165, 54);
                 if (musicMuted)
                 {
@@ -2544,154 +2880,129 @@ namespace Monopoly
                     Console.SetCursorPosition(165, 56);
                 }
                 Console.Write("╚═══════════════════════════════════════════════════════════════╝");
-                switch (Console.ReadKey(true).Key)
+            }
+            while (turnNotEnded)
+            {
+                while (Console.KeyAvailable)
                 {
-                    case ConsoleKey.Spacebar:
-                        DBL:
-                        ClearMenu();
-                        dice1 = rnd.Next(1, 7);
-                        dice2 = rnd.Next(1, 7);
-                        if (player.prisoned)
-                        {
-                            // ToDo: на третью попытку нужно выходить
-                            if (dice1 != dice2)
+                    ConsoleKey key;
+                    if (skip) key = ConsoleKey.Spacebar;
+                    else key = Console.ReadKey(true).Key;
+                    switch (key)
+                    {
+                        case ConsoleKey.Spacebar:
+                            turnNotEnded = ThrowDices(player, turn);
+                            int oldPosition = player.position;
+                            int newPosition = (oldPosition + dice1 + dice2) % 40;
+                            if (!player.prisoned)
                             {
-                                PrintDices(dice1, dice2, 0);
-                                player.escapeAttempts++;
-                                Thread.Sleep(1500);
-                                goto END;
-                            }
-                            player.prisoned = false;
-                            player.escapeAttempts = 0;
-                        }
-                        int oldPosition = player.position;
-                        int newPosition = (oldPosition + dice1 + dice2) % 40;
-                        if (dice1 == dice2)
-                        {
-                            doubles++;
-                            if (doubles == 3)
-                            {
-                                player.prisoned = true;
-                                quartals[10].visitors++;
-                                PrintPieces(30, 10, player.piece);
-                                quartals[30].visitors--;
-                                player.position = 10;
-                                doubles = 0;
-                                goto END;
-                            }
-                            else
-                            {
-                                doubled = true;
-                            }
-                        }
-                        else doubles = 0;
-                        PrintDices(dice1, dice2, doubles);
-                        if (!player.prisoned)
-                        {
-                            for (int j = oldPosition; j != newPosition;)
-                            {
-                                int next = (j + 1) % 40;
-                                quartals[next].visitors++;
-                                PrintPieces(j, next, player.piece);
-                                quartals[j].visitors--;
-                                Thread.Sleep(sleep);
-                                j = next;
-                            }
-                            Quartal quartal = quartals[newPosition];
-                            player.position = newPosition;
-                            if (quartal.special == 1)
-                            {
-                                Treasury(player);
-                                if (player.prisoned) goto END;
-                            }
-                            else if (quartal.special == 2)
-                            {
-                                Chance(player);
-                                if (player.prisoned) goto END;
-                            }
-                            else if (quartal.special == 3)
-                            {
-                                while (true)
+                                for (int j = oldPosition; j != newPosition;)
                                 {
-                                    ClearMenu();
-                                    Console.SetCursorPosition(165, 50);
-                                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
-                                    Console.SetCursorPosition(165, 51);
-                                    Console.Write("║      Вам пришла мысль проведать знакомого. Вы посетитель      ║");
-                                    Console.SetCursorPosition(165, 52);
-                                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
-                                    Console.SetCursorPosition(165, 53);
-                                    if (doubled)
+                                    int next = (j + 1) % 40;
+                                    quartals[next].visitors++;
+                                    PrintPieces(j, next, player.piece);
+                                    quartals[j].visitors--;
+                                    Thread.Sleep(sleep);
+                                    j = next;
+                                }
+                                Quartal quartal = quartals[newPosition];
+                                player.position = newPosition;
+                                if (quartal.special == 1)
+                                {
+                                    Quartal newQuartal = Treasury(player);
+                                    if (player.prisoned)
                                     {
-                                        Console.Write("║ Пробел – Бросить кубики         Tab – Посмотреть недвижимость ║");
+                                        turnNotEnded = false;
+                                        break;
                                     }
-                                    else
+                                    if (newQuartal != null)
                                     {
-                                        Console.Write("║ Enter – Закончить ход           Tab – Посмотреть недвижимость ║");
-                                    }
-                                    Console.SetCursorPosition(165, 54);
-                                    if (musicMuted)
-                                    {
-                                        Console.Write("║ T – Предложить обмен                      M – Включить музыку ║");
-                                    }
-                                    else
-                                    {
-                                        Console.Write("║ T – Предложить обмен                     M – Заглушить музыку ║");
-                                    }
-                                    Console.SetCursorPosition(165, 55);
-                                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
-                                    switch (Console.ReadKey(true).Key)
-                                    {
-                                        case ConsoleKey.Spacebar:
-                                            if (doubled) goto DBL;
-                                            break;
-                                        case ConsoleKey.Enter:
-                                            if (!doubled) goto END;
-                                            break;
-                                        case ConsoleKey.Tab:
-                                            break;
-                                        case ConsoleKey.T:
-                                            Trade(player);
-                                            break;
-                                        case ConsoleKey.M:
-                                            if (musicMuted)
-                                            {
-                                                musicMuted = false;
-                                                musicPlayer.PlayLooping();
-                                            }
-                                            else
-                                            {
-                                                musicMuted = true;
-                                                musicPlayer.Stop();
-                                            }
-                                            break;
+                                        BuyOrAuctionOrRent(player, newQuartal, turn);
+                                        Menu(player, turn);
+                                        turnNotEnded = false;
+                                        break;
                                     }
                                 }
-                            }
-                            else if (quartal.special == 4)
-                            {
-                                // Todo: Написать о том, что игрок пришёл на парковку
-                            }
-                            else if (quartal.special == 5)
-                            {
-                                player.prisoned = true;
-                                quartals[10].visitors++;
-                                PrintPieces(30, 10, player.piece);
-                                quartals[30].visitors--;
-                                player.position = 10;
-                                doubles = 0;
-                                goto END;
-                            }
-                            else if (quartal.special == 6 || quartal.special == 7 || quartal.special == -1)
-                            {
-                                PrintCard(quartal);
-                                while (true)
+                                else if (quartal.special == 2)
+                                {
+                                    Quartal newQuartal = Chance(player);
+                                    if (player.prisoned) break;
+                                    if (newQuartal != null)
+                                    {
+                                        BuyOrAuctionOrRent(player, newQuartal, turn);
+                                        Menu(player, turn);
+                                        break;
+                                    }
+                                }
+                                else if (quartal.special == 3)
+                                {
+                                    while (turnNotEnded)
+                                    {
+                                        ClearMenu();
+                                        Console.SetCursorPosition(165, 50);
+                                        Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                                        Console.SetCursorPosition(165, 51);
+                                        Console.Write("║      Вам пришла мысль проведать знакомого. Вы посетитель      ║");
+                                        Console.SetCursorPosition(165, 52);
+                                        Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                                        Console.SetCursorPosition(165, 53);
+                                        if (doubled)
+                                        {
+                                            Console.Write("║ Пробел – Бросить кубики         Tab – Посмотреть недвижимость ║");
+                                        }
+                                        else
+                                        {
+                                            Console.Write("║ Enter – Закончить ход           Tab – Посмотреть недвижимость ║");
+                                        }
+                                        Console.SetCursorPosition(165, 54);
+                                        if (musicMuted)
+                                        {
+                                            Console.Write("║ T – Предложить обмен                      M – Включить музыку ║");
+                                        }
+                                        else
+                                        {
+                                            Console.Write("║ T – Предложить обмен                     M – Заглушить музыку ║");
+                                        }
+                                        Console.SetCursorPosition(165, 55);
+                                        Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                                        switch (Console.ReadKey(true).Key)
+                                        {
+                                            case ConsoleKey.Spacebar:
+                                                if (doubled) Menu(player, turn, true);
+                                                break;
+                                            case ConsoleKey.Enter:
+                                                turnNotEnded = false;
+                                                break;
+                                            case ConsoleKey.Tab:
+                                                PrintRealty(player);
+                                                break;
+                                            case ConsoleKey.T:
+                                                Trade(player);
+                                                break;
+                                            case ConsoleKey.M:
+                                                if (musicMuted)
+                                                {
+                                                    musicMuted = false;
+                                                    musicPlayer.PlayLooping();
+                                                    Console.Write("║ T – Предложить обмен                     M – Заглушить музыку ║");
+                                                }
+                                                else
+                                                {
+                                                    musicMuted = true;
+                                                    musicPlayer.Stop();
+                                                    Console.Write("║ T – Предложить обмен                      M – Включить музыку ║");
+                                                }
+                                                break;
+                                        }
+                                    }
+                                }
+                                else if (quartal.special == 4)
                                 {
                                     ClearMenu();
                                     Console.SetCursorPosition(165, 50);
                                     Console.Write("╔═══════════════════════════════════════════════════════════════╗");
                                     Console.SetCursorPosition(165, 51);
-                                    Console.Write("║                Купить или выставить на аукцион?               ║");
+                                    Console.Write("║             Ваша остановка! Бесплатная парковка               ║");
                                     Console.SetCursorPosition(165, 52);
                                     Console.Write("╠═══════════════════════════════════════════════════════════════╣");
                                     Console.SetCursorPosition(165, 53);
@@ -2808,128 +3119,98 @@ namespace Monopoly
                                     Console.Write("║                 End – Объявить себя банкротом                 ║");
                                     Console.SetCursorPosition(165, 56);
                                     Console.Write("╚═══════════════════════════════════════════════════════════════╝");
-                                    switch (Console.ReadKey(true).Key)
+                                    while (turnNotEnded)
                                     {
-                                        case ConsoleKey.Enter:
-                                            if (player.balance >= 100)
+                                        while (Console.KeyAvailable)
+                                        {
+                                            switch (Console.ReadKey(true).Key)
                                             {
-                                                player.balance -= 100;
-                                                while (true)
-                                                {
-                                                    ClearMenu();
-                                                    Console.SetCursorPosition(165, 50);
-                                                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
-                                                    Console.SetCursorPosition(165, 51);
-                                                    Console.Write("║                              МЕНЮ                             ║");
-                                                    Console.SetCursorPosition(165, 52);
-                                                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
-                                                    Console.SetCursorPosition(165, 53);
-                                                    if (doubled)
+                                                case ConsoleKey.Enter:
+                                                    if (player.balance >= 100)
                                                     {
-                                                        Console.Write("║ Пробел – Бросить кубики         Tab – Посмотреть недвижимость ║");
+                                                        player.balance -= 100;
+                                                        Menu(player, turn, true);
+                                                        turnNotEnded = false;
                                                     }
-                                                    else
-                                                    {
-                                                        Console.Write("║ Enter – Закончить ход           Tab – Посмотреть недвижимость ║");
-                                                    }
-                                                    Console.SetCursorPosition(165, 54);
+                                                    break;
+                                                case ConsoleKey.Tab:
+                                                    PrintRealty(player);
+                                                    break;
+                                                case ConsoleKey.T:
+                                                    Trade(player);
+                                                    break;
+                                                case ConsoleKey.M:
                                                     if (musicMuted)
                                                     {
-                                                        Console.Write("║ T – Предложить обмен                      M – Включить музыку ║");
+                                                        musicMuted = false;
+                                                        musicPlayer.PlayLooping();
+                                                        Console.Write("║ T – Предложить обмен                     M – Заглушить музыку ║");
                                                     }
                                                     else
                                                     {
-                                                        Console.Write("║ T – Предложить обмен                     M – Заглушить музыку ║");
+                                                        musicMuted = true;
+                                                        musicPlayer.Stop();
+                                                        Console.Write("║ T – Предложить обмен                      M – Включить музыку ║");
                                                     }
-                                                    Console.SetCursorPosition(165, 55);
-                                                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
-                                                    switch(Console.ReadKey(true).Key)
+                                                    break;
+                                                case ConsoleKey.End:
+                                                    player.Bankrupt(null);
+                                                    int liberation = player.liberation;
+                                                    for (int i = 0; i < liberation; i++)
                                                     {
-                                                        case ConsoleKey.Spacebar:
-                                                            if (doubled) goto DBL;
-                                                            break;
-                                                        case ConsoleKey.Enter:
-                                                            if (!doubled) goto END;
-                                                            break;
-                                                        case ConsoleKey.Tab:
-                                                            PrintRealty(player);
-                                                            break;
-                                                        case ConsoleKey.T:
-                                                            Trade(player);
-                                                            break;
-                                                        case ConsoleKey.M:
-                                                            if (musicMuted)
-                                                            {
-                                                                musicMuted = false;
-                                                                musicPlayer.PlayLooping();
-                                                            }
-                                                            else
-                                                            {
-                                                                musicMuted = true;
-                                                                musicPlayer.Stop();
-                                                            }
-                                                            break;
+                                                        if (treasuries.Count == 15)
+                                                        {
+                                                            treasuries.Add(4);
+                                                            player.liberation--;
+                                                        }
+                                                        else
+                                                        {
+                                                            chances.Add(4);
+                                                            player.liberation--;
+                                                        }
                                                     }
-                                                }
+                                                    turnNotEnded = false;
+                                                    break;
                                             }
-                                            break;
-                                        case ConsoleKey.Tab:
-                                            PrintRealty(player);
-                                            break;
-                                        case ConsoleKey.T:
-                                            Trade(player);
-                                            break;
-                                        case ConsoleKey.M:
-                                            if (musicMuted)
-                                            {
-                                                musicMuted = false;
-                                                musicPlayer.PlayLooping();
-                                            }
-                                            else
-                                            {
-                                                musicMuted = true;
-                                                musicPlayer.Stop();
-                                            }
-                                            break;
-                                        case ConsoleKey.End:
-                                            player.Bankrupt(null);
-                                            goto END;
+                                        }
                                     }
                                 }
+                                if (doubled) Menu(player, turn, true);
+                                turnNotEnded = false;
                             }
-                            if (doubled) goto DBL;
-                            goto END;
-                        }
-                        break;
-                    case ConsoleKey.T:
-                        Trade(player);
-                        break;
-                    case ConsoleKey.Tab:
-                        PrintRealty(player);
-                        break;
-                    case ConsoleKey.M:
-                        if (musicMuted)
-                        {
-                            musicMuted = false;
-                            musicPlayer.PlayLooping();
-                        }
-                        else
-                        {
-                            musicMuted = true;
-                            musicPlayer.Stop();
-                        }
-                        break;
-                    case ConsoleKey.P:
-                        if (player.prisoned)
-                        {
-                            player.prisoned = false;
-                            player.balance -= 50;
-                            goto DBL;
-                        }
-                        break;
+                            break;
+                        case ConsoleKey.T:
+                            Trade(player);
+                            break;
+                        case ConsoleKey.Tab:
+                            PrintRealty(player);
+                            break;
+                        case ConsoleKey.M:
+                            if (musicMuted)
+                            {
+                                musicMuted = false;
+                                musicPlayer.PlayLooping();
+                                Console.Write("║ T – Предложить обмен                     M – Заглушить музыку ║");
+                            }
+                            else
+                            {
+                                musicMuted = true;
+                                musicPlayer.Stop();
+                                Console.Write("║ T – Предложить обмен                      M – Включить музыку ║");
+                            }
+                            break;
+                        case ConsoleKey.P:
+                            if (player.prisoned)
+                            {
+                                player.prisoned = false;
+                                player.balance -= 50;
+                                Menu(player, turn, true);
+                            }
+                            break;
+                    }
                 }
             }
-            END:;
+            PrintTitle();
         }
 
         /// <summary>
@@ -3160,81 +3441,694 @@ namespace Monopoly
         /// Вытаскивание карты "Казна"
         /// </summary>
         /// <param name="player">Номер ходящего игрока</param>
-        static public void Treasury(Player player)
+        static public Quartal Treasury(Player player)
         {
             int card = treasuries[0];
-            for (var i = 1; i < 16; i++)
-            {
-                treasuries[i - 1] = treasuries[i];
-            }
-            treasuries[15] = card;
+            bool notEntered;
+            treasuries.RemoveAt(0);
+            treasuries.Add(card);
             switch (card)
             {
-                // ToDo: SetCursorPosition + WriteLine
                 case 0:
-                    player.balance += 25;
-                    break;
-                case 1:
-                    player.balance -= 50;
-                    break;
-                case 2:
-                    for (int i = player.position; i > 1; i--)
+                case 8:
+                    ClearMenu();
+                    happyPlayer.Position = TimeSpan.Zero;
+                    happyPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║              Выгодная продажа акций! Получите 25$             ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
                     {
-                        quartals[i - 1].visitors++;
-                        PrintPieces(i, i - 1, player.piece);
-                        quartals[i].visitors--;
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Получить 25$                      M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Получить 25$                     M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                player.balance += 25;
+                                moneyPlayer.Position = TimeSpan.Zero;
+                                moneyPlayer.Play();
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
                     }
-                    player.position = 1;
-                    // ToDo: Покупка, аукцион или оплата ренты
-                    break;
+                    return null;
+                case 1:
+                    ClearMenu();
+                    sadPlayer.Position = TimeSpan.Zero;
+                    sadPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║            Пора платить за страховку! Заплатите 50$           ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Заплатить 50$                     M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Заплатить 50$                    M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                player.balance -= 50;
+                                moneyPlayer.Position = TimeSpan.Zero;
+                                moneyPlayer.Play();
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return null;
+                case 2:
+                    ClearMenu();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║                   Вернитесь на Старую дорогу                  ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Перейти                           M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Перейти                          M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                for (int i = player.position; i > 1; i--)
+                                {
+                                    quartals[i - 1].visitors++;
+                                    PrintPieces(i, i - 1, player.piece);
+                                    quartals[i].visitors--;
+                                }
+                                player.position = 1;
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return quartals[1];
                 case 3:
-                    player.balance -= 50;
-                    break;
+                    ClearMenu();
+                    sadPlayer.Position = TimeSpan.Zero;
+                    sadPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║         У вас простуда! Заплатите за услуги доктора 50$       ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Заплатить 50$                     M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Заплатить 50$                    M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                player.balance -= 50;
+                                moneyPlayer.Position = TimeSpan.Zero;
+                                moneyPlayer.Play();
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return null;
                 case 4:
-                    player.liberation++;
-                    treasuries = treasuries.Where(treasury => treasury != 4).ToArray();
-                    break;
+                    ClearMenu();
+                    happyPlayer.Position = TimeSpan.Zero;
+                    happyPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║                 Начальник тюрьмы Ваш должник!                 ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("║            Получите карточку освобождения от тюрьмы           ║");
+                    Console.SetCursorPosition(165, 53);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 55);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 54);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Получить                          M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Получить                         M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                paperPlayer.Position = TimeSpan.Zero;
+                                paperPlayer.Play();
+                                player.liberation++;
+                                treasuries.Remove(4);
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return null;
                 case 5:
                     quartals[10].visitors++;
                     PrintPieces(player.position, 10, player.piece);
                     quartals[player.position].visitors--;
                     player.position = 10;
                     player.prisoned = true;
-                    break;
+                    policePlayer.Position = TimeSpan.Zero;
+                    policePlayer.Play();
+                    return null;
                 case 6:
-                    player.balance -= 100;
-                    break;
-                case 7:
-                    // ToDo: -10 || chance
-                    break;
-                case 8:
-                    player.balance += 25;
-                    break;
-                case 9:
-                    player.balance += 25;
-                    break;
-                case 10:
-                    player.balance += 50;
-                    break;
-                case 11:
-                    for (int i = 0; i < playersCount; i++)
+                    ClearMenu();
+                    sadPlayer.Position = TimeSpan.Zero;
+                    sadPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║       Вы сломали ногу! Заплатите за услуги доктора 100$       ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
                     {
-                        players[i].balance -= 10;
-                        player.balance += 10;
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Заплатить 100$                    M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Заплатить 100$                   M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                player.balance -= 100;
+                                moneyPlayer.Position = TimeSpan.Zero;
+                                moneyPlayer.Play();
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
                     }
-                    break;
+                    return null;
+                case 7:
+                    ClearMenu();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║           Заплатите штраф 10$ или возьмите \"Шанс\"           ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("║ Пробел – Заплатить штраф 10$         Enter – Взять \"Шанс\" ║");
+                    Console.SetCursorPosition(165, 55);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 54);
+                        if (musicMuted)
+                        {
+                            Console.Write("║                      M – Включить музыку                      ║");
+                        }
+                        else
+                        {
+                            Console.Write("║                      M – Заглушить музыку                     ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Spacebar:
+                                player.balance -= 10;
+                                moneyPlayer.Position = TimeSpan.Zero;
+                                moneyPlayer.Play();
+                                break;
+                            case ConsoleKey.Enter:
+                                return Chance(player);
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return null;
+                case 9:
+                    ClearMenu();
+                    happyPlayer.Position = TimeSpan.Zero;
+                    happyPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║                Возмещение налога! Получите 25$                ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Получить 25$                      M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Получить 25$                     M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                player.balance += 25;
+                                moneyPlayer.Position = TimeSpan.Zero;
+                                moneyPlayer.Play();
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return null;
+                case 10:
+                    ClearMenu();
+                    happyPlayer.Position = TimeSpan.Zero;
+                    happyPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║            Выгодная продажа облигаций! Получите 50$           ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Получить 50$                      M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Получить 50$                     M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                player.balance += 50;
+                                moneyPlayer.Position = TimeSpan.Zero;
+                                moneyPlayer.Play();
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return null;
+                case 11:
+                    ClearMenu();
+                    happyPlayer.Position = TimeSpan.Zero;
+                    happyPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║       У вас день рождения! Получите 10$ с каждого игрока      ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Получить                          M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Получить                         M – Заглушить музыку ║");
+                        }
+                        Console.SetCursorPosition(184, 53);
+                        Console.Write($"{10 * (playersCount - 1)}$");
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                for (int i = 0; i < playersCount; i++)
+                                {
+                                    players[i].balance -= 10;
+                                    player.balance += 10;
+                                }
+                                moneyPlayer.Position = TimeSpan.Zero;
+                                moneyPlayer.Play();
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return null;
                 case 12:
-                    player.balance += 200;
-                    break;
+                    ClearMenu();
+                    happyPlayer.Position = TimeSpan.Zero;
+                    happyPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║         Банковская ошибка в Вашу пользу! Получите 200$        ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Получить 200$                     M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Получить 200$                    M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                player.balance += 200;
+                                moneyPlayer.Position = TimeSpan.Zero;
+                                moneyPlayer.Play();
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return null;
                 case 13:
-                    player.balance += 100;
-                    break;
+                    ClearMenu();
+                    happyPlayer.Position = TimeSpan.Zero;
+                    happyPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║         На Ваше имя подписали завещание! Получите 100$        ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Получить 100$                     M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Получить 100$                    M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                player.balance += 100;
+                                moneyPlayer.Position = TimeSpan.Zero;
+                                moneyPlayer.Play();
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return null;
                 case 14:
-                    player.balance += 10;
-                    break;
-                case 15:
-                    player.balance += 100;
-                    break;
+                    ClearMenu();
+                    happyPlayer.Position = TimeSpan.Zero;
+                    happyPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║    Вы заняли второе место на конкурсе красоты! Получите 10$   ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Получить 10$                      M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Получить 10$                     M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                player.balance += 10;
+                                moneyPlayer.Position = TimeSpan.Zero;
+                                moneyPlayer.Play();
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return null;
+                default:
+                    ClearMenu();
+                    happyPlayer.Position = TimeSpan.Zero;
+                    happyPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║                   Сбор ренты! Получите 100$                   ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Получить 100$                     M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Получить 100$                    M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                player.balance += 100;
+                                moneyPlayer.Position = TimeSpan.Zero;
+                                moneyPlayer.Play();
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break; 
+                        }
+                    }
+                    return null;
             }
         }
 
@@ -3242,100 +4136,783 @@ namespace Monopoly
         /// Вытаскивание карты "Шанс"
         /// </summary>
         /// <param name="player">Номер ходящего игрока</param>
-        static public void Chance(Player player)
+        static public Quartal Chance(Player player)
         {
             int card = chances[0];
-            for (var i = 1; i < 16; i++)
-            {
-                chances[i - 1] = chances[i];
-            }
-            chances[15] = card;
+            int payment;
+            bool notEntered;
+            chances.RemoveAt(0);
+            chances.Add(card);
             int position = player.position;
             switch (card)
             {
-                // ToDo: SetCursorPosition + WriteLine
                 case 0:
-                    player.balance -= 40 * player.housesCount + 115 * player.hotelsCount;
-                    break;
+                    ClearMenu();
+                    sadPlayer.Position = TimeSpan.Zero;
+                    sadPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║                      Сбор на ремонт улиц!                     ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("║       Заплатите 40$ за каждый дом и 115$ за каждый отель      ║");
+                    Console.SetCursorPosition(165, 53);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 55);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    payment = 40 * player.housesCount + 115 * player.hotelsCount;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 54);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Заплатить                         M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Заплатить                         M – Заглушить музыку ║");
+                        }
+                        Console.SetCursorPosition(165, 54);
+                        Console.Write($"{payment}$");
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                player.balance -= payment;
+                                if (payment > 0)
+                                {
+                                    moneyPlayer.Position = TimeSpan.Zero;
+                                    moneyPlayer.Play();
+                                }
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return null;
                 case 1:
                     quartals[10].visitors++;
                     PrintPieces(position, 10, player.piece);
                     quartals[position].visitors--;
                     player.position = 10;
                     player.prisoned = true;
-                    break;
+                    policePlayer.Position = TimeSpan.Zero;
+                    policePlayer.Play();
+                    return null;
                 case 2:
-                    player.balance -= 20;
-                    break;
-                case 3:
-                    for (int j = position; j != (position + 37) % 40;)
+                    ClearMenu();
+                    sadPlayer.Position = TimeSpan.Zero;
+                    sadPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║       Штраф за вождение в нетрезвом виде! Заплатите 20$       ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
                     {
-                        int next = (position + 1) % 40;
-                        quartals[next].visitors++;
-                        PrintPieces(j, next, player.piece);
-                        quartals[j].visitors--;
-                        Thread.Sleep(sleep);
-                        j = next;
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Заплатить 20$                      M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Заплатить 20$                    M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                player.balance -= 20;
+                                moneyPlayer.Position = TimeSpan.Zero;
+                                moneyPlayer.Play();
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
                     }
-                    player.position = (position + 37) % 40;
-                    break;
+                    return null;
+                case 3:
+                    ClearMenu();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║                  Вернитесь на три поля назад                  ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Вернуться                         M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Вернуться                       M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                for (int j = position; j != (position + 37) % 40;)
+                                {
+                                    int next = (position + 1) % 40;
+                                    quartals[next].visitors++;
+                                    PrintPieces(j, next, player.piece);
+                                    quartals[j].visitors--;
+                                    Thread.Sleep(sleep);
+                                    j = next;
+                                }
+                                player.position = (position + 37) % 40;
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return quartals[(position + 37) % 40];
                 case 4:
-                    player.liberation++;
-                    chances = chances.Where(chance => chance != 4).ToArray();
-                    break;
+                    ClearMenu();
+                    happyPlayer.Position = TimeSpan.Zero;
+                    happyPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║                 Начальник тюрьмы Ваш должник!                 ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("║            Получите карточку освобождения от тюрьмы           ║");
+                    Console.SetCursorPosition(165, 53);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 55);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 54);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Получить                          M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Получить                         M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                paperPlayer.Position = TimeSpan.Zero;
+                                paperPlayer.Play();
+                                player.liberation++;
+                                chances.Remove(4);
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return null;
                 case 5:
-                    player.balance += 150;
-                    break;
+                    ClearMenu();
+                    happyPlayer.Position = TimeSpan.Zero;
+                    happyPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║                  Возврат займа! Получите 150$                 ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Получить 150$                     M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Получить 150$                    M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                player.balance += 150;
+                                moneyPlayer.Position = TimeSpan.Zero;
+                                moneyPlayer.Play();
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return null;
                 case 6:
-                    player.balance += 50;
-                    break;
+                    ClearMenu();
+                    happyPlayer.Position = TimeSpan.Zero;
+                    happyPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║           Пришли банковские дивиденды! Получите 50$           ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Получить 50$                      M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Получить 50$                     M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                player.balance += 50;
+                                moneyPlayer.Position = TimeSpan.Zero;
+                                moneyPlayer.Play();
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return null;
                 case 7:
-                    position = player.position;
-                    quartals[6].visitors++;
-                    PrintPieces(position, 6, player.piece);
-                    quartals[position].visitors--;
-                    player.position = 6;
-                    break;
+                    ClearMenu();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║                   Отправляйтесь в Аквапарк!                   ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("║             Если Вы пройдёте Старт, получите 200$             ║");
+                    Console.SetCursorPosition(165, 53);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 55);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 54);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Отправиться в Аквапарк            M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Отправиться в Аквапарк           M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                position = player.position;
+                                quartals[6].visitors++;
+                                PrintPieces(position, 6, player.piece);
+                                quartals[position].visitors--;
+                                if (position > 6)
+                                {
+                                    player.balance += 200;
+                                    moneyPlayer.Position = TimeSpan.Zero;
+                                    moneyPlayer.Play();
+                                }
+                                player.position = 6;
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return quartals[6];
                 case 8:
-                    position = player.position;
-                    quartals[0].visitors++;
-                    PrintPieces(position, 0, player.piece);
-                    quartals[position].visitors--;
-                    player.position = 0;
-                    break;
+                    ClearMenu();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║                       Пройдите на Старт                       ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Пройти на Старт                   M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Пройти на Старт                  M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                position = player.position;
+                                quartals[0].visitors++;
+                                PrintPieces(position, 0, player.piece);
+                                quartals[position].visitors--;
+                                player.position = 0;
+                                player.balance += 200;
+                                moneyPlayer.Position = TimeSpan.Zero;
+                                moneyPlayer.Play();
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return null;
                 case 9:
-                    player.balance -= 15;
-                    break;
+                    ClearMenu();
+                    sadPlayer.Position = TimeSpan.Zero;
+                    sadPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║          Штраф за превышение скорости! Заплатите 15$          ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Заплатить 15$                      M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Заплатить 15$                    M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                player.balance -= 15;
+                                moneyPlayer.Position = TimeSpan.Zero;
+                                moneyPlayer.Play();
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return null;
                 case 10:
-                    position = player.position;
-                    quartals[15].visitors++;
-                    PrintPieces(position, 15, player.piece);
-                    quartals[position].visitors--;
-                    player.position = 15;
-                    break;
+                    ClearMenu();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║             Отправляйтесь в Северный морской порт!            ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("║             Если Вы пройдёте Старт, получите 200$             ║");
+                    Console.SetCursorPosition(165, 53);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("║          Enter – Отправиться в Северный морской порт          ║");
+                    Console.SetCursorPosition(165, 56);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 55);
+                        if (musicMuted)
+                        {
+                            Console.Write("║                      M – Включить музыку                      ║");
+                        }
+                        else
+                        {
+                            Console.Write("║                      M – Заглушить музыку                     ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                position = player.position;
+                                quartals[15].visitors++;
+                                PrintPieces(position, 15, player.piece);
+                                quartals[position].visitors--;
+                                if (position > 15)
+                                {
+                                    player.balance += 200;
+                                    moneyPlayer.Position = TimeSpan.Zero;
+                                    moneyPlayer.Play();
+                                }
+                                player.position = 15;
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return quartals[15];
                 case 11:
-                    player.balance += 100;
-                    break;
+                    ClearMenu();
+                    happyPlayer.Position = TimeSpan.Zero;
+                    happyPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║        Вы выиграли чемпионат по шахматам! Получите 100$       ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Получить 200$                     M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Получить 200$                    M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                player.balance += 100;
+                                moneyPlayer.Position = TimeSpan.Zero;
+                                moneyPlayer.Play();
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return null;
                 case 12:
-                    position = player.position;
-                    quartals[39].visitors++;
-                    PrintPieces(position, 39, player.piece);
-                    quartals[position].visitors--;
-                    player.position = 39;
-                    break;
+                    ClearMenu();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║             Отправляйтесь в Гостиничный комплекс!             ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Отправиться в Гостиничный комплекс M – Включить музыку║");
+                        }
+                        else
+                        {
+                            Console.Write("║Enter – Отправиться в Гостиничный косплекс M – Заглушить музыку║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                position = player.position;
+                                quartals[39].visitors++;
+                                PrintPieces(position, 39, player.piece);
+                                quartals[position].visitors--;
+                                player.position = 39;
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return quartals[39];
                 case 13:
-                    position = player.position;
-                    quartals[24].visitors++;
-                    PrintPieces(position, 24, player.piece);
-                    quartals[position].visitors--;
-                    player.position = 24;
-                    break;
+                    ClearMenu();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║                   Отправляйтесь в Ресторан!                   ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("║             Если Вы пройдёте Старт, получите 200$             ║");
+                    Console.SetCursorPosition(165, 53);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 55);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 54);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Отправиться в Ресторан            M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Отправиться в Ресторан           M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                position = player.position;
+                                quartals[24].visitors++;
+                                PrintPieces(position, 24, player.piece);
+                                quartals[position].visitors--;
+                                if (position > 24)
+                                {
+                                    player.balance += 200;
+                                    moneyPlayer.Position = TimeSpan.Zero;
+                                    moneyPlayer.Play();
+                                }
+                                player.position = 24;
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return quartals[24];
                 case 14:
-                    player.balance -= 25 * player.housesCount + 100 * player.hotelsCount;
-                    break;
-                case 15:
-                    player.balance -= 150;
-                    break;
+                    ClearMenu();
+                    sadPlayer.Position = TimeSpan.Zero;
+                    sadPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║                      Капитальный ремонт!                      ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("║       Заплатите 25$ за каждый дом и 100$ за каждый отель      ║");
+                    Console.SetCursorPosition(165, 53);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 55);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    payment = 25 * player.housesCount + 100 * player.hotelsCount;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 54);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Заплатить                         M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Заплатить                         M – Заглушить музыку ║");
+                        }
+                        Console.SetCursorPosition(165, 54);
+                        Console.Write($"{payment}$");
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                player.balance -= payment;
+                                if (payment > 0)
+                                {
+                                    moneyPlayer.Position = TimeSpan.Zero;
+                                    moneyPlayer.Play();
+                                }
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return null;
+                default:
+                    ClearMenu();
+                    sadPlayer.Position = TimeSpan.Zero;
+                    sadPlayer.Play();
+                    Console.SetCursorPosition(165, 50);
+                    Console.Write("╔═══════════════════════════════════════════════════════════════╗");
+                    Console.SetCursorPosition(165, 51);
+                    Console.Write("║            Оплата курсов водителей! Заплатите 150$            ║");
+                    Console.SetCursorPosition(165, 52);
+                    Console.Write("╠═══════════════════════════════════════════════════════════════╣");
+                    Console.SetCursorPosition(165, 54);
+                    Console.Write("╚═══════════════════════════════════════════════════════════════╝");
+                    notEntered = true;
+                    while (notEntered)
+                    {
+                        Console.SetCursorPosition(165, 53);
+                        if (musicMuted)
+                        {
+                            Console.Write("║ Enter – Заплатить 150$                    M – Включить музыку ║");
+                        }
+                        else
+                        {
+                            Console.Write("║ Enter – Заплатить 150$                   M – Заглушить музыку ║");
+                        }
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Enter:
+                                player.balance -= 150;
+                                moneyPlayer.Position = TimeSpan.Zero;
+                                moneyPlayer.Play();
+                                notEntered = false;
+                                break;
+                            case ConsoleKey.M:
+                                if (musicMuted)
+                                {
+                                    musicPlayer.PlayLooping();
+                                    musicMuted = false;
+                                }
+                                else
+                                {
+                                    musicPlayer.Stop();
+                                    musicMuted = true;
+                                }
+                                break;
+                        }
+                    }
+                    return null;
             }
         }
 
@@ -3350,6 +4927,10 @@ namespace Monopoly
             // Sounds
             musicPlayer.PlayLooping();
             moneyPlayer.Open(new System.Uri(@"C:\Users\Class_Student\source\repos\Monopoly\Resources\money.wav"));
+            policePlayer.Open(new System.Uri(@"C:\Users\Class_Student\source\repos\Monopoly\Resources\police.wav"));
+            paperPlayer.Open(new System.Uri(@"C:\Users\Class_Student\source\repos\Monopoly\Resources\paper.wav"));
+            happyPlayer.Open(new System.Uri(@"C:\Users\Class_Student\source\repos\Monopoly\Resources\happy.wav"));
+            sadPlayer.Open(new System.Uri(@"C:\Users\Class_Student\source\repos\Monopoly\Resources\sad.wav"));
 
             // Shuffle
             int cards = 16;

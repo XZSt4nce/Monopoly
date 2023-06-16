@@ -102,9 +102,6 @@ namespace Monopoly
         }
         public void Bankrupt(Player player)
         {
-            // ToDo:
-            // на вызове метода установить позицию в -1;
-            // на вызове метода вернуть карты освобождения.
             bankrupt = true;
             foreach (var quartal in property)
             {
@@ -141,6 +138,7 @@ namespace Monopoly
             blue = 0;
             cyan = 0;
             balance = 0;
+            position = -1;
         }
     }
 }

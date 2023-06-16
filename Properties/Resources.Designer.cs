@@ -63,6 +63,15 @@ namespace Monopoly.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
         /// </summary>
+        internal static System.IO.UnmanagedMemoryStream happy {
+            get {
+                return ResourceManager.GetStream("happy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        /// </summary>
         internal static System.IO.UnmanagedMemoryStream money {
             get {
                 return ResourceManager.GetStream("money", resourceCulture);
@@ -75,6 +84,33 @@ namespace Monopoly.Properties {
         internal static System.IO.UnmanagedMemoryStream music {
             get {
                 return ResourceManager.GetStream("music", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream paper {
+            get {
+                return ResourceManager.GetStream("paper", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream police {
+            get {
+                return ResourceManager.GetStream("police", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream sad {
+            get {
+                return ResourceManager.GetStream("sad", resourceCulture);
             }
         }
     }
