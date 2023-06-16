@@ -2775,27 +2775,6 @@ namespace Monopoly
                                                             break;
                                                     }
                                                 }
-                                            }
-                                            break;
-                                        case ConsoleKey.Enter:
-                                            PrintTitle();
-                                            Auction(quartal);
-                                            break;
-                                        case ConsoleKey.M:
-                                            if (musicMuted)
-                                            {
-                                                musicMuted = false;
-                                                musicPlayer.PlayLooping();
-                                            }
-                                            else
-                                            {
-                                                musicMuted = true;
-                                                musicPlayer.Stop();
-                                            }
-                                            break;
-                                    }
-                                }
-                            }
                             else if (quartal.special == 8)
                             {
                                 // Todo: Заплатить 10% от нынешнего баланса или 200$
