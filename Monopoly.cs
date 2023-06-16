@@ -3179,7 +3179,6 @@ namespace Monopoly
                 PrintTitle();
             }
 
-
             /// <summary>
             /// Покупка игроком конкретной улицы
             /// </summary>
