@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Windows.Media;
 
 namespace Monopoly
 {
     public class Quartal
     {
-        public readonly string name;
-        public readonly ConsoleColor color;
-        public Player owner;
-        public int visitors;
+        private readonly string name;
+        private readonly ConsoleColor color;
+        private Player owner;
+        private int visitors;
         /// <summary>
         /// Специальное обозначение улицы.
         /// -1 – обычная улица
@@ -22,18 +24,17 @@ namespace Monopoly
         /// 8 – налог;
         /// 9 – дорогая покупка.
         /// </summary>
-        public readonly int special;
-        public readonly int cost;
-        public readonly int noMonopolyRent;
-        public readonly int monopolyRent;
-        public readonly int house1Rent;
-        public readonly int house2Rent;
-        public readonly int house3Rent;
-        public readonly int house4Rent;
-        public readonly int hotelRent;
-        public readonly int houseCost;
+        private readonly int special;
+        private readonly int cost;
+        private readonly int noMonopolyRent;
+        private readonly int monopolyRent;
+        private readonly int house1Rent;
+        private readonly int house2Rent;
+        private readonly int house3Rent;
+        private readonly int house4Rent;
+        private readonly int hotelRent;
+        private readonly int houseCost;
         /// <summary>
-        /// Уровень прокачки.
         /// 0 – без домов;
         /// 1 – 1 дом;
         /// 2 – 2 дома;
@@ -41,15 +42,32 @@ namespace Monopoly
         /// 4 – 4 дома;
         /// 5  отель.
         /// </summary>
-        public int level;
-        /// <summary>
-        /// Сумма денег, полученных при заложении улицы
-        /// </summary>
-        public readonly int pledge;
-        /// <summary>
-        /// Является ли улица заложенной
-        /// </summary>
-        public bool isMantaged;
+        private int level;
+        private readonly int pledge;
+        private readonly List<Quartal> colorGroup;
+        private bool isMantaged;
+        private bool? isMonopoly;
+
+        public string Name { get { return name; } }
+        public ConsoleColor Color { get { return color; } }
+        public Player Owner { get { return owner; } }
+        public int Visitors { get { return visitors; } }
+        public int Special { get { return special; } }
+        public int Cost { get { return cost; } }
+        public int NoMonopolyRent { get { return noMonopolyRent; } }
+        public int MonopolyRent { get { return monopolyRent; } }
+        public int House1Rent { get { return house1Rent; } }
+        public int House2Rent { get { return house2Rent; } }
+        public int House3Rent { get { return house3Rent; } }
+        public int House4Rent { get { return house4Rent; } }
+        public int HotelRent { get { return hotelRent; } }
+        public int HouseCost { get { return houseCost; } }
+        public int Level { get { return level; } }
+        public int Pledge { get { return pledge; } }
+        public List<Quartal> ColorGroup { get { return colorGroup; } }
+        public bool IsMantaged { get { return isMantaged; } }
+        public bool? IsMonopoly { get { return isMonopoly; } }
+
         public Quartal (string _name, ConsoleColor _color, int _cost, int _noMonopolyRent, int _monopolyRent, int _house1Rent, int _house2Rent,
                        int _house3Rent, int _house4Rent, int _hotelRent, int _houseCost, int _pledge)
         {
@@ -69,7 +87,9 @@ namespace Monopoly
             hotelRent = _hotelRent;
             houseCost = _houseCost;
             pledge = _pledge;
+            colorGroup = new List<Quartal>();
             isMantaged = false;
+            isMonopoly = false;
         }
         public Quartal(string _name, int _cost, int _house1Rent, int _house2Rent,
                        int _house3Rent, int _house4Rent, int _pledge)
@@ -85,53 +105,139 @@ namespace Monopoly
             pledge = _pledge;
             visitors = 0;
             isMantaged = false;
+            isMonopoly = null;
         }
+
         public Quartal (int _special)
         {
             special = _special;
             visitors = 0;
         }
+
         public Quartal(string _name)
         {
             name = _name;
+            owner = null;
             cost = 150;
             pledge = 75;
             isMantaged = false;
+            isMonopoly = null;
             special = 7;
             visitors = 0;
         }
-         public void Mantage()
+
+        public void InitStart(int playersCount)
+        {
+            if (special == 0) visitors = playersCount;
+        }
+
+        public void AddToGroup(Quartal quartal)
+        {
+            colorGroup.Add(quartal);
+        }
+
+        public void SetOwner(Player player)
+        {
+            if (player == null) owner = player;
+            else
+            {
+                if (owner == null)
+                {
+                    player.Pay(cost);
+                }
+                else
+                {
+                    owner.DecreaseColor(this);
+                    owner.RemoveProperty(this);
+                }
+                owner = player;
+                owner.IncreaseColor(this);
+                owner.AddProperty(this);
+                isMonopoly = true;
+                if (colorGroup != null)
+                {
+                    foreach (Quartal quartal in colorGroup)
+                    {
+                        if (quartal.owner != owner)
+                        {
+                            isMonopoly = false;
+                            break;
+                        }
+                    }
+                    foreach (Quartal quartal in colorGroup)
+                    {
+                        quartal.isMonopoly = isMonopoly;
+                    }
+                }
+            }
+        }
+
+        public void SetOwner(Player player, int bid)
+        {
+            if (owner == null)
+            {
+                player.Pay(bid);
+            }
+            else
+            {
+                owner.DecreaseColor(this);
+                owner.RemoveProperty(this);
+            }
+            owner = player;
+            owner.IncreaseColor(this);
+            owner.AddProperty(this);
+        }
+
+        public void Mantage()
         {
             isMantaged = true;
-            owner.balance *= pledge;
+            owner.Receive(Pledge);
         }
+
+        public void Redeem()
+        {
+            isMantaged = false;
+            owner.Pay(pledge + pledge / 10);
+        }
+
         public void Downgrade()
         {
             if (level == 5)
             {
-                owner.housesCount += 4;
-                owner.hotelsCount--;
+                owner.AddHouses(4);
+                owner.DecreaseHotels();
             }
             else
             {
-                owner.housesCount--;
+                owner.ReduceHouses(1);
             }
             level--;
-            owner.balance += houseCost / 2;
+            owner.Receive(houseCost / 2);
         }
+
+        public void IncreaseVisitors()
+        {
+            visitors++;
+        }
+
+        public void DecreaseVisitors()
+        {
+            visitors--;
+        }
+
         public void Upgrade()
         {
             level++;
             if (level == 5)
             {
-                owner.housesCount -= 4;
-                owner.hotelsCount++;
+                owner.ReduceHouses(4);
+                owner.IncreaseHotels();
             }
             else
             {
-                owner.housesCount++;
+                owner.AddHouses(1);
             }
-            owner.balance -= houseCost;
+            owner.Pay(houseCost);
         }
     }
 }

@@ -1,80 +1,58 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Monopoly
 {
     public class Player
     {
-        public string name;
-        public char piece;
-        public int balance;
-        public int position;
-        public List<Quartal> property;
-        /// <summary>
-        /// Количество построенных домов на улицах игрока
-        /// </summary>
-        public int housesCount;
-        /// <summary>
-        /// Количество построенных отелей на улицах игрока
-        /// </summary>
-        public int hotelsCount;
-        /// <summary>
-        /// Количество жёлтых улиц игрока
-        /// </summary>
-        public int yellow;
-        /// <summary>
-        /// Количество портов игрока
-        /// </summary>
-        public int black;
-        /// <summary>
-        /// Количество тёмно-жёлтых улиц игрока
-        /// </summary>
-        public int darkYellow;
-        /// <summary>
-        /// Количество тёмно-зелёных улиц игрока
-        /// </summary>
-        public int darkGreen;
-        /// <summary>
-        /// Количество зелёных улиц игрока
-        /// </summary>
-        public int green;
-        /// <summary>
-        /// Количество красных улиц игрока
-        /// </summary>
-        public int red;
-        /// <summary>
-        /// Количество пурпурных улиц игрока
-        /// </summary>
-        public int magenta;
-        /// <summary>
-        /// Количество коммунальных предприятий игрока
-        /// </summary>
-        public int gray;
-        /// <summary>
-        /// Количество синих улиц игрока
-        /// </summary>
-        public int blue;
-        /// <summary>
-        /// Количество голубых улиц игрока
-        /// </summary>
-        public int cyan;
-        /// <summary>
-        /// Количество карточек освобождения игрока
-        /// </summary>
-        public int liberation;
-        /// <summary>
-        /// Количество попыток выйти из тюрьмы. При выходе из тюрьмы обнуляется
-        /// </summary>
-        public int escapeAttempts;
-        /// <summary>
-        /// Аннулировал ли ставку игрок на аукционе. По умолчанию – false
-        /// </summary>
-        public bool canselled;
-        /// <summary>
-        /// Делал ли ставку игрок на аукционе. По умолчанию – false
-        /// </summary>
-        public bool didBid;
-        public bool prisoned;
-        public bool bankrupt;
+        private readonly string name;
+        private readonly char piece;
+        private int balance;
+        private int position;
+        private readonly List<Quartal> property;
+        private int housesCount;
+        private int hotelsCount;
+        private int yellow;
+        private int black;
+        private int darkYellow;
+        private int darkGreen;
+        private int green;
+        private int red;
+        private int magenta;
+        private int gray;
+        private int blue;
+        private int cyan;
+        private int liberation;
+        private int escapeAttempts;
+        private bool cancelled;
+        private bool didBid;
+        private bool isPrisoned;
+        private bool isBankrupt;
+
+        public string Name { get { return name; } }
+        public char Piece { get { return piece; } }
+        public int Balance { get { return balance; } }
+        public int Position { get { return position; } }
+        public List<Quartal> Property { get { return property; } }
+        public int HousesCount { get { return housesCount; } }
+        public int HotelsCount { get { return hotelsCount; } }
+        public int Yellow { get { return yellow; } }
+        public int Black { get { return black; } }
+        public int DarkYellow { get { return darkYellow; } }
+        public int DarkGreen { get { return darkGreen; } }
+        public int Green { get { return green; } }
+        public int Red { get { return red; } }
+        public int Magenta { get {  return magenta; } }
+        public int Gray { get { return gray; } }
+        public int Blue { get { return blue; } }
+        public int Cyan { get { return cyan; } }
+        public int Liberation { get { return liberation; } }
+        public int EscapeAttempts { get { return escapeAttempts; } }
+        public bool Cancelled { get { return cancelled; } }
+        public bool DidBid { get { return didBid; } }
+        public bool IsPrisoned { get { return isPrisoned; } }
+        public bool IsBankrupt { get { return isBankrupt; } }
+
         public Player(string _name, char _piece)
         {
             name = _name;
@@ -96,16 +74,91 @@ namespace Monopoly
             cyan = 0;
             liberation = 0;
             escapeAttempts = 0;
-            canselled = false;
-            prisoned = false;
-            bankrupt = false;
+            cancelled = false;
+            isPrisoned = false;
+            isBankrupt = false;
         }
+
+        public void IncreaseColor(Quartal quartal)
+        {
+            switch (quartal.Color)
+            {
+                case ConsoleColor.Black:
+                    black++;
+                    break;
+                case ConsoleColor.Gray:
+                    gray++;
+                    break;
+                case ConsoleColor.Yellow:
+                    yellow++;
+                    break;
+                case ConsoleColor.DarkYellow:
+                    darkYellow++;
+                    break;
+                case ConsoleColor.DarkGreen:
+                    darkGreen++;
+                    break;
+                case ConsoleColor.Green:
+                    green++;
+                    break;
+                case ConsoleColor.Red:
+                    red++;
+                    break;
+                case ConsoleColor.Magenta:
+                    magenta++;
+                    break;
+                case ConsoleColor.Blue:
+                    blue++;
+                    break;
+                case ConsoleColor.Cyan:
+                    cyan++;
+                    break;
+            }
+        }
+
+        public void DecreaseColor(Quartal quartal)
+        {
+            switch (quartal.Color)
+            {
+                case ConsoleColor.Black:
+                    black--;
+                    break;
+                case ConsoleColor.Gray:
+                    gray--;
+                    break;
+                case ConsoleColor.Yellow:
+                    yellow--;
+                    break;
+                case ConsoleColor.DarkYellow:
+                    darkYellow--;
+                    break;
+                case ConsoleColor.DarkGreen:
+                    darkGreen--;
+                    break;
+                case ConsoleColor.Green:
+                    green--;
+                    break;
+                case ConsoleColor.Red:
+                    red--;
+                    break;
+                case ConsoleColor.Magenta:
+                    magenta--;
+                    break;
+                case ConsoleColor.Blue:
+                    blue--;
+                    break;
+                case ConsoleColor.Cyan:
+                    cyan--;
+                    break;
+            }
+        }
+
         public void Bankrupt(Player player)
         {
-            bankrupt = true;
+            isBankrupt = true;
             foreach (var quartal in property)
             {
-                for (int i = quartal.level; i > 0; i--)
+                for (int i = quartal.Level; i > 0; i--)
                 {
                     quartal.Downgrade();
                 }
@@ -115,7 +168,7 @@ namespace Monopoly
             {
                 foreach (var quartal in property)
                 {
-                    quartal.owner = null;
+                    quartal.SetOwner(null);
                 }
             }
             else
@@ -123,7 +176,7 @@ namespace Monopoly
                 player.balance += balance;
                 foreach (var quartal in property)
                 {
-                    quartal.owner = player;
+                    quartal.SetOwner(null);
                 }
             }
 
@@ -139,6 +192,95 @@ namespace Monopoly
             cyan = 0;
             balance = 0;
             position = -1;
+        }
+
+        public void GetLiberation()
+        {
+            liberation++;
+        }
+
+        public void SpendLiberation()
+        {
+            liberation--;
+            LeavePrison();
+        }
+
+        public void Arrest()
+        {
+            position = 10;
+            isPrisoned = true;
+        }
+
+        public void LeavePrison()
+        {
+            isPrisoned = false;
+            escapeAttempts = 0;
+        }
+
+        public void DoEscapeAttempt()
+        {
+            escapeAttempts++;
+        }
+
+        public void AddProperty(Quartal quartal)
+        {
+            property.Add(quartal);
+        }
+        
+        public void RemoveProperty(Quartal quartal)
+        {
+            property.Remove(quartal);
+        }
+
+        public void Pay (int amount)
+        {
+            balance -= amount;
+        }
+
+        public void Receive (int amount)
+        {
+            balance += amount;
+        }
+
+        public void DoBid()
+        {
+            didBid = true;
+        }
+
+        public void CancelAuction()
+        {
+            cancelled = true;
+        }
+
+        public void EndAuction()
+        {
+            cancelled = false;
+            didBid = false;
+        }
+
+        public void AddHouses (int amount)
+        {
+            housesCount += amount;
+        }
+
+        public void ReduceHouses(int amount)
+        {
+            housesCount -= amount;
+        }
+
+        public void IncreaseHotels()
+        {
+            hotelsCount++;
+        }
+
+        public void DecreaseHotels()
+        {
+            hotelsCount--;
+        }
+
+        public void Move(int newPosition)
+        {
+            position = newPosition;
         }
     }
 }
