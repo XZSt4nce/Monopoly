@@ -3195,6 +3195,7 @@ namespace Monopoly
                                 player.Move(next);
                                 quartals[next].IncreaseVisitors();
                                 PrintPieces(j, next, player);
+                                player.Move((next + 1) % 40);
                                 quartals[j].DecreaseVisitors();
                                 Thread.Sleep(sleep);
                                 j = next;
@@ -4006,6 +4007,7 @@ namespace Monopoly
                                     quartals[i - 1].IncreaseVisitors();
                                     player.Move(i - 1);
                                     PrintPieces(i, i - 1, player);
+                                    player.Move(i);
                                     quartals[i].DecreaseVisitors();
                                 }
                                 player.Move(1);
@@ -5515,12 +5517,50 @@ namespace Monopoly
             media.Open(new Uri(path));
         }
 
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct FontInfo
+        {
+            internal int cbSize;
+            internal int FontIndex;
+            internal short FontWidth;
+            public short FontSize;
+            public int FontFamily;
+            public int FontWeight;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+            public string FontName;
+        }
+
+        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        internal static extern bool GetCurrentConsoleFontEx(IntPtr hConsoleOutput, bool MaximumWindow, ref FontInfo ConsoleCurrentFontEx);
+
+        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        internal static extern bool SetCurrentConsoleFontEx(IntPtr hConsoleOutput, bool MaximumWindow, ref FontInfo ConsoleCurrentFontEx);
+
+        public static void SetCurrentFont(short fontSize = 0)
+        {
+            FontInfo set = new FontInfo
+            {
+                cbSize = Marshal.SizeOf<FontInfo>(),
+                FontIndex = 0,
+                FontFamily = 54,
+                FontName = "Consolas",
+                FontWeight = 400,
+                FontSize = fontSize
+            };
+            SetCurrentConsoleFontEx(GetStdHandle(-11), false, ref set);
+        }
+
         static void Main()
         {
             // Настройка окна
             Console.Title = "Монополия";
-            Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
-            Console.SetBufferSize(Console.LargestWindowWidth, 110);
+            /*int width = 231;
+            int height = 58;
+            Console.SetWindowSize(width, height);
+            Console.SetBufferSize(width, height);*/
+            SetCurrentFont(14);
             Console.CursorVisible = false;
 
             // Группировка улиц
