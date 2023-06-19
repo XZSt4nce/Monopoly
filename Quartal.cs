@@ -97,6 +97,7 @@ namespace Monopoly
             name = _name;
             special = 6;
             owner = null;
+            color = ConsoleColor.Black;
             cost = _cost;
             house1Rent = _house1Rent;
             house2Rent = _house2Rent;
@@ -119,11 +120,28 @@ namespace Monopoly
             name = _name;
             owner = null;
             cost = 150;
+            color = ConsoleColor.Gray;
             pledge = 75;
             isMantaged = false;
             isMonopoly = null;
             special = 7;
             visitors = 0;
+        }
+
+        public void Reset()
+        {
+            visitors = 0;
+            if (Special == 6 || Special == 7)
+            {
+                isMantaged = false;
+                owner = null;
+            }
+            if (Special == -1)
+            {
+                owner = null;
+                isMantaged = false;
+                isMonopoly = null;
+            }
         }
 
         public void InitStart(int playersCount)
@@ -153,9 +171,9 @@ namespace Monopoly
                 owner = player;
                 owner.IncreaseColor(this);
                 owner.AddProperty(this);
-                isMonopoly = true;
                 if (colorGroup != null)
                 {
+                    isMonopoly = true;
                     foreach (Quartal quartal in colorGroup)
                     {
                         if (quartal.owner != owner)
@@ -186,6 +204,22 @@ namespace Monopoly
             owner = player;
             owner.IncreaseColor(this);
             owner.AddProperty(this);
+            if (colorGroup != null)
+            {
+                isMonopoly = true;
+                foreach (Quartal quartal in colorGroup)
+                {
+                    if (quartal.owner != owner)
+                    {
+                        isMonopoly = false;
+                        break;
+                    }
+                }
+                foreach (Quartal quartal in colorGroup)
+                {
+                    quartal.isMonopoly = isMonopoly;
+                }
+            }
         }
 
         public void Mantage()

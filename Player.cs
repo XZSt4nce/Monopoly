@@ -22,6 +22,7 @@ namespace Monopoly
         private int gray;
         private int blue;
         private int cyan;
+        private int place;
         private int liberation;
         private int escapeAttempts;
         private bool cancelled;
@@ -46,6 +47,7 @@ namespace Monopoly
         public int Gray { get { return gray; } }
         public int Blue { get { return blue; } }
         public int Cyan { get { return cyan; } }
+        public int Place { get { return place; } }
         public int Liberation { get { return liberation; } }
         public int EscapeAttempts { get { return escapeAttempts; } }
         public bool Cancelled { get { return cancelled; } }
@@ -72,11 +74,40 @@ namespace Monopoly
             gray = 0;
             blue = 0;
             cyan = 0;
+            place = 0;
             liberation = 0;
             escapeAttempts = 0;
             cancelled = false;
             isPrisoned = false;
             isBankrupt = false;
+        }
+
+        public void Reset()
+        {
+            balance = 1500;
+            position = 0;
+            property.Clear();
+            housesCount = 0;
+            housesCount = 0;
+            yellow = 0;
+            black = 0;
+            darkYellow = 0;
+            darkGreen = 0;
+            green = 0;
+            red = 0;
+            magenta = 0;
+            gray = 0;
+            blue = 0;
+            cyan = 0;
+            liberation = 0;
+            escapeAttempts = 0;
+            isPrisoned = false;
+            isBankrupt = false;
+        }
+
+        public void IncreasePlace()
+        {
+            place++;
         }
 
         public void IncreaseColor(Quartal quartal)
@@ -207,7 +238,6 @@ namespace Monopoly
 
         public void Arrest()
         {
-            position = 10;
             isPrisoned = true;
         }
 
