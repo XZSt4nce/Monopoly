@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
+    <None Include="Resources\menu.wav" />
     <None Include="Resources\victory.wav" />
     <None Include="Resources\success.wav" />
     <None Include="Resources\turn.wav" />
