@@ -184,10 +184,11 @@ namespace Monopoly
             }
         }
 
-        public void Bankrupt(Player player)
+        public List<Quartal> Bankrupt(Player player)
         {
             isBankrupt = true;
-            foreach (var quartal in property)
+            List<Quartal> prprt = property;
+            foreach (var quartal in prprt)
             {
                 for (int i = quartal.Level; i > 0; i--)
                 {
@@ -197,32 +198,28 @@ namespace Monopoly
 
             if (player == null)
             {
-                foreach (var quartal in property)
+                foreach (var quartal in prprt)
                 {
+                    if (quartal.IsMantaged)
+                    {
+                        player.Receive(quartal.Pledge + quartal.Pledge / 10);
+                        quartal.Redeem();
+                    }
                     quartal.SetOwner(null);
                 }
+                prprt = null;
             }
             else
             {
-                player.balance += balance;
-                foreach (var quartal in property)
+                player.Receive(balance);
+                foreach (var quartal in prprt)
                 {
-                    quartal.SetOwner(null);
+                    quartal.SetOwner(player);
                 }
             }
-
-            yellow = 0;
-            black = 0;
-            darkYellow = 0;
-            darkGreen = 0;
-            green = 0;
-            red = 0;
-            magenta = 0;
-            gray = 0;
-            blue = 0;
-            cyan = 0;
             balance = 0;
             position = -1;
+            return prprt;
         }
 
         public void GetLiberation()
