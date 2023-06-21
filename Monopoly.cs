@@ -3,20 +3,19 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Media;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Media;
 
 namespace Monopoly
 {
-    public class Monopoly
+    internal class Monopoly
     {
-        static public int playersCount;
-        static public int remaining;
-        static public List<int> treasuries = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-        static public List<int> chances = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-        static public bool musicMuted = false;
+        static int playersCount;
+        static int remaining;
+        static List<int> treasuries = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+        static List<int> chances = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+        static bool musicMuted = false;
         static readonly int sleep = 400;
         static int dice1, dice2;
         static int doubles = 0;
@@ -36,8 +35,9 @@ namespace Monopoly
         static readonly MediaPlayer cancelPlayer = new MediaPlayer();
         static readonly MediaPlayer turnPlayer = new MediaPlayer();
         static readonly MediaPlayer successPlayer = new MediaPlayer();
-        static public Player[] players;
-        static public Quartal[] quartals = new Quartal[40]
+        static readonly Random rnd = new Random();
+        static Player[] players;
+        static Quartal[] quartals = new Quartal[40]
         {
             new Quartal(0),
             new Quartal("Старая дорога", ConsoleColor.Yellow, 60, 2, 4, 10, 30, 90, 160, 250, 50, 30),
@@ -80,9 +80,8 @@ namespace Monopoly
             new Quartal(9),
             new Quartal("Гостиничный комплекс", ConsoleColor.Cyan, 400, 50, 100, 200, 600, 1400, 1700, 2000, 200, 200),
         };
-        static public readonly Random rnd = new Random();
 
-        static public void PrintDices(int dice1, int dice2)
+        static void PrintDices(int dice1, int dice2)
         {
             int column = 3;
             int row = 4;
@@ -214,7 +213,7 @@ namespace Monopoly
             Console.SetCursorPosition(0, row + 6);
         }
 
-        static public void PrintDices(int dice1, int dice2, int doubles)
+        static void PrintDices(int dice1, int dice2, int doubles)
         {
             int column = 187;
             int row = 50;
@@ -360,7 +359,7 @@ namespace Monopoly
             Console.ForegroundColor = ConsoleColor.Black;
         }
 
-        static public void PrintRoadmap()
+        static void PrintRoadmap()
         {
             Console.BackgroundColor = ConsoleColor.White;
             Console.Clear();
@@ -793,7 +792,7 @@ namespace Monopoly
             PrintTitle();
         }
 
-        static public void PrintPlayers(int turn)
+        static void PrintPlayers(int turn)
         {
             int addWidth, addHeight;
             ConsoleColor background;
@@ -889,7 +888,7 @@ namespace Monopoly
             }
         }
 
-        static public void PrintPieces(int oldPosition, int newPosition, Player player)
+        static void PrintPieces(int oldPosition, int newPosition, Player player)
         {
             int oldVisitors = quartals[oldPosition].Visitors - 1;
             int newVisitors = quartals[newPosition].Visitors + 1;
@@ -1179,7 +1178,7 @@ namespace Monopoly
             quartals[oldPosition].DecreaseVisitors();
         }
 
-        static public void PrintTraders(int marker, Player[] traders)
+        static void PrintTraders(int marker, Player[] traders)
         {
             int column = 25, row = 27;
             bool additionalRow = false;
@@ -1257,7 +1256,7 @@ namespace Monopoly
             Console.Write("╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════╝");
         }
 
-        static public void PrintProperty(
+        static void PrintProperty(
             Player player, Player trader,
             List<Quartal> playerProperty, List<Quartal> traderProperty,
             int playerMoney, int traderMoney,
@@ -1521,7 +1520,7 @@ namespace Monopoly
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern IntPtr GetStdHandle(int nStdHandle);
 
-        static public void PrintQuartalLevel(Quartal quartal, int position)
+        static void PrintQuartalLevel(Quartal quartal, int position)
         {
             int row, column;
             if (position <= 10)
@@ -1595,7 +1594,7 @@ namespace Monopoly
             Console.BackgroundColor = ConsoleColor.White;
         }
 
-        static public void PrintOwner(Quartal quartal)
+        static void PrintOwner(Quartal quartal)
         {
             int row, column;
             int position = Array.FindIndex(quartals, q => q == quartal);
@@ -1667,7 +1666,7 @@ namespace Monopoly
             Console.ForegroundColor = ConsoleColor.Black;
         }
 
-        static public void Redeem(Quartal quartal, int turn)
+        static void Redeem(Quartal quartal, int turn)
         {
             PrintTitle();
             PrintCard(quartal);
@@ -1735,7 +1734,7 @@ namespace Monopoly
             ClearMenu();
         }
 
-        static public void Trade(Player player)
+        static void Trade(Player player)
         {
             Player[] traders = players.Where(trader => !trader.Equals(player) && !trader.IsBankrupt).ToArray();
             int marker = 0;
@@ -2157,7 +2156,7 @@ namespace Monopoly
             PrintTitle();
         }
 
-        static public void PrintCard(Quartal quartal)
+        static void PrintCard(Quartal quartal)
         {
             PrintTitle();
             int row, i, spaces, left, right;
@@ -2343,7 +2342,7 @@ namespace Monopoly
             }
         }
 
-        static public void PrintCard(Quartal quartal, int column, int row)
+        static void PrintCard(Quartal quartal, int column, int row)
         {
             int i, spaces, left, right;
             string part1 = "", part2 = "";
@@ -2567,7 +2566,7 @@ namespace Monopoly
             }
         }
 
-        static public void PrintTitle()
+        static void PrintTitle()
         {
             int column = 18, row = 16;
             for (int i = 0; i < 11; i++)
@@ -2622,7 +2621,7 @@ namespace Monopoly
             }
         }
 
-        static public void ClearMenu()
+        static void ClearMenu()
         {
             Console.SetCursorPosition(165, 50);
             Console.Write("                                                                 ");
@@ -2642,7 +2641,7 @@ namespace Monopoly
             Console.Write("                                                                 ");
         }
 
-        static public void PrintRealty(Player player)
+        static void PrintRealty(Player player)
         {
             var property = new List<Quartal>();
             foreach (Quartal q in quartals)
@@ -3129,7 +3128,7 @@ namespace Monopoly
             PrintTitle();
         }
 
-        static public int Rent(Quartal quartal, int dicePoints)
+        static int Rent(Quartal quartal, int dicePoints)
         {
             Player owner = quartal.Owner;
             if (quartal.IsMonopoly == true)
@@ -3172,7 +3171,7 @@ namespace Monopoly
             else return quartal.NoMonopolyRent;
         }
 
-        static public void BuyOrAuctionOrRent(Player player, Quartal quartal, int turn)
+        static void BuyOrAuctionOrRent(Player player, Quartal quartal, int turn)
         {
             PrintCard(quartal);
             if (quartal.Owner == null)
@@ -3317,7 +3316,7 @@ namespace Monopoly
             }
         }
 
-        static public bool ThrowDices(Player player, int turn)
+        static bool ThrowDices(Player player, int turn)
         {
             ClearMenu();
             dice1 = rnd.Next(1, 7);
@@ -3510,7 +3509,7 @@ namespace Monopoly
             return true;
         }
 
-        static public void PrintMenu(string header, int payment, Player player)
+        static void PrintMenu(string header, int payment, Player player)
         {
             int spaces = 63 - header.Length;
             int left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
@@ -3600,7 +3599,7 @@ namespace Monopoly
             Console.Write("╚═══════════════════════════════════════════════════════════════╝");
         }
 
-        static public void Menu(Player player, int turn, bool skip = false, string header = "МЕНЮ")
+        static void Menu(Player player, int turn, bool skip = false, string header = "МЕНЮ")
         {
             bool turnNotEnded = true;
             if (!skip)
@@ -4201,7 +4200,7 @@ namespace Monopoly
             }
         }
 
-        static public void Purchase(Player player, Quartal quartal)
+        static void Purchase(Player player, Quartal quartal)
         {
             moneyPlayer.Position = TimeSpan.Zero;
             moneyPlayer.Play();
@@ -4209,7 +4208,7 @@ namespace Monopoly
             PrintOwner(quartal);
         }
 
-        static public void Auction(Quartal quartal, int turn)
+        static void Auction(Quartal quartal, int turn)
         {
             int spaces, left, right;
             int bid = quartal.Cost;
@@ -4523,7 +4522,7 @@ namespace Monopoly
             PrintTitle();
         }
 
-        static public void SpendLiberation(Player player)
+        static void SpendLiberation(Player player)
         {
             player.SpendLiberation();
             if (treasuries.Count == 15)
@@ -4537,7 +4536,7 @@ namespace Monopoly
             PrintPlayers(Array.FindIndex(players, p => p == player));
         }
 
-        static public void Bankrupt(Player debtor, Player player)
+        static void Bankrupt(Player debtor, Player player)
         {
             sadPlayer.Position = TimeSpan.Zero;
             sadPlayer.Play();
@@ -4563,7 +4562,7 @@ namespace Monopoly
             }
         }
 
-        static public Quartal Treasury(Player player, int turn)
+        static Quartal Treasury(Player player, int turn)
         {
             int card = treasuries[0];
             bool notEntered;
@@ -5229,7 +5228,7 @@ namespace Monopoly
             }
         }
 
-        static public Quartal Chance(Player player, int turn)
+        static Quartal Chance(Player player, int turn)
         {
             int card = chances[0];
             int payment;
@@ -6289,7 +6288,7 @@ namespace Monopoly
             for (int i = 0; i < playersCount; i++) players[i] = new Player(names[i], figures[i]);
         }
 
-        static public void QueueDefinition()
+        static void QueueDefinition()
         {
             int dice1, dice2;
             int[] throws = new int[playersCount];
@@ -6327,7 +6326,7 @@ namespace Monopoly
             }
         }
 
-        static public string CreateDirectory()
+        static string CreateDirectory()
         {
             string path = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic) + @"\MonopolySounds\";
             while (true)
@@ -6365,7 +6364,7 @@ namespace Monopoly
             return path;
         }
 
-        static public void SoundInit(MediaPlayer media, byte[] resource, string path)
+        static void SoundInit(MediaPlayer media, byte[] resource, string path)
         {
             File.WriteAllBytes(path, resource);
             media.Open(new Uri(path));
@@ -6388,7 +6387,7 @@ namespace Monopoly
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         internal static extern bool SetCurrentConsoleFontEx(IntPtr hConsoleOutput, bool MaximumWindow, ref FontInfo ConsoleCurrentFontEx);
 
-        public static void SetCurrentFont(short fontSize = 0)
+        static void SetCurrentFont(short fontSize = 0)
         {
             FontInfo set = new FontInfo
             {
@@ -6402,7 +6401,7 @@ namespace Monopoly
             SetCurrentConsoleFontEx(GetStdHandle(-11), false, ref set);
         }
 
-        public static void FontSetup()
+        static void FontSetup()
         {
             for (short i = 72; i > 4; i--)
             {
@@ -6411,7 +6410,7 @@ namespace Monopoly
             }
         }
 
-        public static bool Victory()
+        static bool Victory()
         {
             musicPlayer.Stop();
             Player winner;
@@ -6474,7 +6473,7 @@ namespace Monopoly
             }
         }
 
-        public static void Reset()
+        static void Reset()
         {
             foreach (Player p in players) p.Reset();
             foreach (Quartal q in quartals) q.Reset();
