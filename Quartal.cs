@@ -91,19 +91,25 @@ namespace Monopoly
             isMantaged = false;
             isMonopoly = false;
         }
-        public Quartal(string _name, int _cost, int _house1Rent, int _house2Rent,
-                       int _house3Rent, int _house4Rent, int _pledge)
+        public Quartal(string _name, bool isBlack)
         {
+            if (isBlack)
+            {
+                special = 6;
+                color = ConsoleColor.Black;
+                cost = 200;
+                pledge = 100;
+            }
+            else
+            {
+                special = 7;
+
+                color = ConsoleColor.Gray;
+                cost = 150;
+                pledge = 75;
+            }
             name = _name;
-            special = 6;
             owner = null;
-            color = ConsoleColor.Black;
-            cost = _cost;
-            house1Rent = _house1Rent;
-            house2Rent = _house2Rent;
-            house3Rent = _house3Rent;
-            house4Rent = _house4Rent;
-            pledge = _pledge;
             visitors = 0;
             isMantaged = false;
             isMonopoly = null;
@@ -112,19 +118,6 @@ namespace Monopoly
         public Quartal (int _special)
         {
             special = _special;
-            visitors = 0;
-        }
-
-        public Quartal(string _name)
-        {
-            name = _name;
-            owner = null;
-            cost = 150;
-            color = ConsoleColor.Gray;
-            pledge = 75;
-            isMantaged = false;
-            isMonopoly = null;
-            special = 7;
             visitors = 0;
         }
 
