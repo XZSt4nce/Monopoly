@@ -21,9 +21,9 @@ namespace Monopoly
         static int dice1, dice2;
         static int doubles = 0;
         static bool repeat = false;
-        static readonly SoundPlayer menuPlayer = new SoundPlayer(Resources.menu);
-        static readonly SoundPlayer musicPlayer = new SoundPlayer(Resources.music);
-        static readonly SoundPlayer victoryPlayer = new SoundPlayer(Resources.victory);
+        static readonly MediaPlayer menuPlayer = new MediaPlayer();
+        static readonly MediaPlayer musicPlayer = new MediaPlayer();
+        static readonly MediaPlayer victoryPlayer = new MediaPlayer();
         static readonly MediaPlayer moneyPlayer = new MediaPlayer();
         static readonly MediaPlayer policePlayer = new MediaPlayer();
         static readonly MediaPlayer paperPlayer = new MediaPlayer();
@@ -1719,13 +1719,13 @@ namespace Monopoly
                         if (musicMuted)
                         {
                             musicMuted = false;
-                            musicPlayer.PlayLooping();
+                            musicPlayer.Volume = 0.5;
                             Console.Write("║                      M – Заглушить музыку                     ║");
                         }
                         else
                         {
                             musicMuted = true;
-                            musicPlayer.Stop();
+                            musicPlayer.Volume = 0;
                             Console.Write("║                      M – Включить музыку                      ║");
                         }
                         break;
@@ -1734,8 +1734,6 @@ namespace Monopoly
             PrintTitle();
             ClearMenu();
         }
-
-        // PrintRealty сортировать улицы
 
         static public void Trade(Player player)
         {
@@ -2061,13 +2059,13 @@ namespace Monopoly
                                                 if (musicMuted)
                                                 {
                                                     musicMuted = false;
-                                                    musicPlayer.PlayLooping();
+                                                    musicPlayer.Volume = 0.5;
                                                     Console.Write("║                      M – Заглушить музыку                     ║");
                                                 }
                                                 else
                                                 {
                                                     musicMuted = true;
-                                                    musicPlayer.Stop();
+                                                    musicPlayer.Volume = 0;
                                                     Console.Write("║                      M – Включить музыку                      ║");
                                                 }
                                                 break;
@@ -2126,12 +2124,12 @@ namespace Monopoly
                                     if (musicMuted)
                                     {
                                         musicMuted = false;
-                                        musicPlayer.PlayLooping();
+                                        musicPlayer.Volume = 0.5;
                                     }
                                     else
                                     {
                                         musicMuted = true;
-                                        musicPlayer.Stop();
+                                        musicPlayer.Volume = 0;
                                     }
                                     break;
                             }
@@ -2141,12 +2139,12 @@ namespace Monopoly
                         if (musicMuted)
                         {
                             musicMuted = false;
-                            musicPlayer.PlayLooping();
+                            musicPlayer.Volume = 0.5;
                         }
                         else
                         {
                             musicMuted = true;
-                            musicPlayer.Stop();
+                            musicPlayer.Volume = 0;
                         }
                         break;
                     case ConsoleKey.Backspace:
@@ -2646,7 +2644,11 @@ namespace Monopoly
 
         static public void PrintRealty(Player player)
         {
-            var property = player.Property;
+            var property = new List<Quartal>();
+            foreach (Quartal q in quartals)
+            {
+                if (player.Property.Contains(q)) property.Add(q);
+            }
             bool upgradeable = true;
             bool downgradeable = true;
             bool mantageable = true;
@@ -3117,7 +3119,7 @@ namespace Monopoly
                         else
                         {
                             musicMuted = true;
-                            musicPlayer.Stop();
+                            musicPlayer.Volume = 0;
                             Console.Write("║                      M – Включить музыку                      ║");
                         }
                         break;
@@ -3224,14 +3226,14 @@ namespace Monopoly
                             if (musicMuted)
                             {
                                 musicMuted = false;
-                                musicPlayer.PlayLooping();
+                                musicPlayer.Volume = 0.5;
                                 Console.SetCursorPosition(165, 54);
                                 Console.Write("║                      M – Заглушить музыку                     ║");
                             }
                             else
                             {
                                 musicMuted = true;
-                                musicPlayer.Stop();
+                                musicPlayer.Volume = 0;
                                 Console.SetCursorPosition(165, 54);
                                 Console.Write("║                      M – Включить музыку                      ║");
                             }
@@ -3287,12 +3289,12 @@ namespace Monopoly
                                 if (musicMuted)
                                 {
                                     musicMuted = false;
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                 }
                                 else
                                 {
                                     musicMuted = true;
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                 }
                                 PrintMenu(header, rent, player);
                                 break;
@@ -3435,13 +3437,13 @@ namespace Monopoly
                                     if (musicMuted)
                                     {
                                         musicMuted = false;
-                                        musicPlayer.PlayLooping();
+                                        musicPlayer.Volume = 0.5;
                                         Console.Write("║ T – Предложить обмен                     M – Заглушить музыку ║");
                                     }
                                     else
                                     {
                                         musicMuted = true;
-                                        musicPlayer.Stop();
+                                        musicPlayer.Volume = 0;
                                         Console.Write("║ T – Предложить обмен                      M – Включить музыку ║");
                                     }
                                     break;
@@ -3777,13 +3779,13 @@ namespace Monopoly
                                                 if (musicMuted)
                                                 {
                                                     musicMuted = false;
-                                                    musicPlayer.PlayLooping();
+                                                    musicPlayer.Volume = 0.5;
                                                     Console.Write("║ T – Предложить обмен                     M – Заглушить музыку ║");
                                                 }
                                                 else
                                                 {
                                                     musicMuted = true;
-                                                    musicPlayer.Stop();
+                                                    musicPlayer.Volume = 0;
                                                     Console.Write("║ T – Предложить обмен                      M – Включить музыку ║");
                                                 }
                                                 break;
@@ -3901,13 +3903,13 @@ namespace Monopoly
                                                 if (musicMuted)
                                                 {
                                                     musicMuted = false;
-                                                    musicPlayer.PlayLooping();
+                                                    musicPlayer.Volume = 0.5;
                                                     Console.Write("║ T – Предложить обмен                     M – Заглушить музыку ║");
                                                 }
                                                 else
                                                 {
                                                     musicMuted = true;
-                                                    musicPlayer.Stop();
+                                                    musicPlayer.Volume = 0;
                                                     Console.Write("║ T – Предложить обмен                      M – Включить музыку ║");
                                                 }
                                                 break;
@@ -4075,13 +4077,13 @@ namespace Monopoly
                                                 Console.SetCursorPosition(165, 55);
                                                 if (musicMuted)
                                                 {
-                                                    musicPlayer.PlayLooping();
+                                                    musicPlayer.Volume = 0.5;
                                                     musicMuted = false;
                                                     Console.Write("║ M – Заглушить музыку            End – Объявить себя банкротом ║");
                                                 }
                                                 else
                                                 {
-                                                    musicPlayer.Stop();
+                                                    musicPlayer.Volume = 0;
                                                     musicMuted = true;
                                                     Console.Write("║ M – Включить музыку             End – Объявить себя банкротом ║");
                                                 }
@@ -4131,12 +4133,12 @@ namespace Monopoly
                                                 if (musicMuted)
                                                 {
                                                     musicMuted = false;
-                                                    musicPlayer.PlayLooping();
+                                                    musicPlayer.Volume = 0.5;
                                                 }
                                                 else
                                                 {
                                                     musicMuted = true;
-                                                    musicPlayer.Stop();
+                                                    musicPlayer.Volume = 0;
                                                 }
                                                 PrintMenu(header, 100, player);
                                                 break;
@@ -4169,12 +4171,12 @@ namespace Monopoly
                         if (musicMuted)
                         {
                             musicMuted = false;
-                            musicPlayer.PlayLooping();
+                            musicPlayer.Volume = 0.5;
                         }
                         else
                         {
                             musicMuted = true;
-                            musicPlayer.Stop();
+                            musicPlayer.Volume = 0;
                         }
                         PrintMenu(header, 0, player);
                         break;
@@ -4364,13 +4366,13 @@ namespace Monopoly
                                 if (musicMuted)
                                 {
                                     musicMuted = false;
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     Console.Write("║                      M – Заглушить музыку                     ║");
                                 }
                                 else
                                 {
                                     musicMuted = true;
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     Console.Write("║                      M – Включить музыку                      ║");
                                 }
                                 break;
@@ -4499,13 +4501,13 @@ namespace Monopoly
                             if (musicMuted)
                             {
                                 musicMuted = false;
-                                musicPlayer.PlayLooping();
+                                musicPlayer.Volume = 0.5;
                                 Console.Write("║                      M – Заглушить музыку                     ║");
                             }
                             else
                             {
                                 musicMuted = true;
-                                musicPlayer.Stop();
+                                musicPlayer.Volume = 0;
                                 Console.Write("║                      M – Включить музыку                      ║");
                             }
                             break;
@@ -4592,12 +4594,12 @@ namespace Monopoly
                             case ConsoleKey.M:
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                 }
                                 PrintMenu(header, payment, player);
@@ -4628,12 +4630,12 @@ namespace Monopoly
                             case ConsoleKey.M:
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                 }
                                 PrintMenu(header, payment, player);
@@ -4689,13 +4691,13 @@ namespace Monopoly
                                 Console.SetCursorPosition(165, 53);
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                     Console.Write("║ Enter – Вернуться на Старую дорогу       M – Заглушить музыку ║");
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                     Console.Write("║ Enter – Вернуться на Старую дорогу        M – Включить музыку ║");
                                 }
@@ -4726,12 +4728,12 @@ namespace Monopoly
                             case ConsoleKey.M:
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                 }
                                 PrintMenu(header, payment, player);
@@ -4794,13 +4796,13 @@ namespace Monopoly
                                 Console.SetCursorPosition(165, 54);
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                     Console.Write("║ Enter – Получить                         M – Заглушить музыку ║");
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                     Console.Write("║ Enter – Получить                          M – Включить музыку ║");
                                 }
@@ -4847,12 +4849,12 @@ namespace Monopoly
                             case ConsoleKey.M:
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                 }
                                 PrintMenu(header, payment, player);
@@ -4920,13 +4922,13 @@ namespace Monopoly
                                 Console.SetCursorPosition(165, 54);
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                     Console.Write("║                      M – Заглушить музыку                     ║");
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                     Console.Write("║                      M – Включить музыку                      ║");
                                 }
@@ -4954,12 +4956,12 @@ namespace Monopoly
                             case ConsoleKey.M:
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                 }
                                 PrintMenu(header, payment, player);
@@ -4987,12 +4989,12 @@ namespace Monopoly
                             case ConsoleKey.M:
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                 }
                                 PrintMenu(header, payment, player);
@@ -5027,12 +5029,12 @@ namespace Monopoly
                             case ConsoleKey.M:
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                 }
                                 PrintMenu(header, payment, player);
@@ -5060,12 +5062,12 @@ namespace Monopoly
                                     case ConsoleKey.M:
                                         if (musicMuted)
                                         {
-                                            musicPlayer.PlayLooping();
+                                            musicPlayer.Volume = 0.5;
                                             musicMuted = false;
                                         }
                                         else
                                         {
-                                            musicPlayer.Stop();
+                                            musicPlayer.Volume = 0;
                                             musicMuted = true;
                                         }
                                         PrintMenu(header, payment, debtor);
@@ -5112,12 +5114,12 @@ namespace Monopoly
                             case ConsoleKey.M:
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                 }
                                 PrintMenu(header, payment, player);
@@ -5145,12 +5147,12 @@ namespace Monopoly
                             case ConsoleKey.M:
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                 }
                                 PrintMenu(header, payment, player);
@@ -5178,12 +5180,12 @@ namespace Monopoly
                             case ConsoleKey.M:
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                 }
                                 PrintMenu(header, payment, player);
@@ -5211,12 +5213,12 @@ namespace Monopoly
                             case ConsoleKey.M:
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                 }
                                 PrintMenu(header, payment, player);
@@ -5263,12 +5265,12 @@ namespace Monopoly
                                 case ConsoleKey.M:
                                     if (musicMuted)
                                     {
-                                        musicPlayer.PlayLooping();
+                                        musicPlayer.Volume = 0.5;
                                         musicMuted = false;
                                     }
                                     else
                                     {
-                                        musicPlayer.Stop();
+                                        musicPlayer.Volume = 0;
                                         musicMuted = true;
                                     }
                                     PrintMenu(header, payment, player);
@@ -5345,12 +5347,12 @@ namespace Monopoly
                             case ConsoleKey.M:
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                 }
                                 PrintMenu(header, payment, player);
@@ -5411,13 +5413,13 @@ namespace Monopoly
                                 Console.SetCursorPosition(165, 53);
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                     Console.Write("║ Enter – Вернуться                       M – Заглушить музыку ║");
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                     Console.Write("║ Enter – Вернуться                         M – Включить музыку ║");
                                 }
@@ -5566,13 +5568,13 @@ namespace Monopoly
                                         Console.SetCursorPosition(165, 55);
                                         if (musicMuted)
                                         {
-                                            musicPlayer.PlayLooping();
+                                            musicPlayer.Volume = 0.5;
                                             musicMuted = false;
                                             Console.Write("║ M – Заглушить музыку            End – Объявить себя банкротом ║");
                                         }
                                         else
                                         {
-                                            musicPlayer.Stop();
+                                            musicPlayer.Volume = 0;
                                             musicMuted = true;
                                             Console.Write("║ M – Включить музыку             End – Объявить себя банкротом ║");
                                         }
@@ -5626,13 +5628,13 @@ namespace Monopoly
                                 Console.SetCursorPosition(165, 53);
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                     Console.Write("║ Enter – Получить                         M – Заглушить музыку ║");
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                     Console.Write("║ Enter – Получить                          M – Включить музыку ║");
                                 }
@@ -5660,12 +5662,12 @@ namespace Monopoly
                             case ConsoleKey.M:
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                 }
                                 PrintMenu(header, payment, player);
@@ -5693,12 +5695,12 @@ namespace Monopoly
                             case ConsoleKey.M:
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                 }
                                 PrintMenu(header, payment, player);
@@ -5746,13 +5748,13 @@ namespace Monopoly
                                 Console.SetCursorPosition(165, 54);
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                     Console.Write("║ Enter – Отправиться в Аквапарк           M – Заглушить музыку ║");
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                     Console.Write("║ Enter – Отправиться в Аквапарк            M – Включить музыку ║");
                                 }
@@ -5795,13 +5797,13 @@ namespace Monopoly
                                 Console.SetCursorPosition(165, 53);
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                     Console.Write("║ Enter – Пройти на Старт                  M – Заглушить музыку ║");
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                     Console.Write("║ Enter – Пройти на Старт                   M – Включить музыку ║");
                                 }
@@ -5832,12 +5834,12 @@ namespace Monopoly
                             case ConsoleKey.M:
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                 }
                                 PrintMenu(header, payment, player);
@@ -5903,13 +5905,13 @@ namespace Monopoly
                                 Console.SetCursorPosition(165, 55);
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                     Console.Write("║                      M – Заглушить музыку                     ║");
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                     Console.Write("║                      M – Включить музыку                      ║");
                                 }
@@ -5937,12 +5939,12 @@ namespace Monopoly
                             case ConsoleKey.M:
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                 }
                                 PrintMenu(header, payment, player);
@@ -5982,13 +5984,13 @@ namespace Monopoly
                                 Console.SetCursorPosition(165, 53);
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                     Console.Write("║Enter – Отправиться в Гостиничный косплекс M – Заглушить музыку║");
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                     Console.Write("║ Enter – Отправиться в Гостиничный комплекс M – Включить музыку║");
                                 }
@@ -6036,13 +6038,13 @@ namespace Monopoly
                                 Console.SetCursorPosition(165, 54);
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                     Console.Write("║ Enter – Отправиться в Ресторан           M – Заглушить музыку ║");
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                     Console.Write("║ Enter – Отправиться в Ресторан            M – Включить музыку ║");
                                 }
@@ -6075,12 +6077,12 @@ namespace Monopoly
                                 case ConsoleKey.M:
                                     if (musicMuted)
                                     {
-                                        musicPlayer.PlayLooping();
+                                        musicPlayer.Volume = 0.5;
                                         musicMuted = false;
                                     }
                                     else
                                     {
-                                        musicPlayer.Stop();
+                                        musicPlayer.Volume = 0;
                                         musicMuted = true;
                                     }
                                     PrintMenu(header, payment, player);
@@ -6141,12 +6143,12 @@ namespace Monopoly
                             case ConsoleKey.M:
                                 if (musicMuted)
                                 {
-                                    musicPlayer.PlayLooping();
+                                    musicPlayer.Volume = 0.5;
                                     musicMuted = false;
                                 }
                                 else
                                 {
-                                    musicPlayer.Stop();
+                                    musicPlayer.Volume = 0;
                                     musicMuted = true;
                                 }
                                 PrintMenu(header, payment, player);
@@ -6363,12 +6365,9 @@ namespace Monopoly
             return path;
         }
 
-        static public void SoundInit(MediaPlayer media, UnmanagedMemoryStream resource, string path)
+        static public void SoundInit(MediaPlayer media, byte[] resource, string path)
         {
-            int length = Convert.ToInt32(resource.Length);
-            byte[] arr = new byte[length];
-            resource.Read(arr, 0, length);
-            File.WriteAllBytes(path, arr);
+            File.WriteAllBytes(path, resource);
             media.Open(new Uri(path));
         }
 
@@ -6464,10 +6463,12 @@ namespace Monopoly
                     case ConsoleKey.NumPad1:
                     case ConsoleKey.D1:
                         victoryPlayer.Stop();
+                        menuPlayer.Play();
                         return true;
                     case ConsoleKey.NumPad2:
                     case ConsoleKey.D2:
                         victoryPlayer.Stop();
+                        menuPlayer.Play();
                         return false;
                 }
             }
@@ -6549,18 +6550,25 @@ namespace Monopoly
             // Звуки
             string path = CreateDirectory();
 
-            SoundInit(moneyPlayer, Resources.money, path + "money.wav");
-            SoundInit(policePlayer, Resources.police, path + "police.wav");
-            SoundInit(paperPlayer, Resources.paper, path + "paper.wav");
-            SoundInit(happyPlayer, Resources.happy, path + "happy.wav");
-            SoundInit(sadPlayer, Resources.sad, path + "sad.wav");
-            SoundInit(upgradePlayer, Resources.upgrade, path + "upgrade.wav");
-            SoundInit(downgradePlayer, Resources.downgrade, path + "downgrade.wav");
-            SoundInit(padlockPlayer, Resources.padlock, path + "padlock.wav");
-            SoundInit(chainPlayer, Resources.chain, path + "chain.wav");
-            SoundInit(cancelPlayer, Resources.cancel, path + "cancel.wav");
-            SoundInit(turnPlayer, Resources.turn, path + "turn.wav");
-            SoundInit(successPlayer, Resources.success, path + "success.wav");
+            SoundInit(moneyPlayer, Resources.money, path + "money.mp3");
+            SoundInit(policePlayer, Resources.police, path + "police.mp3");
+            SoundInit(paperPlayer, Resources.paper, path + "paper.mp3");
+            SoundInit(happyPlayer, Resources.happy, path + "happy.mp3");
+            SoundInit(sadPlayer, Resources.sad, path + "sad.mp3");
+            SoundInit(upgradePlayer, Resources.upgrade, path + "upgrade.mp3");
+            SoundInit(downgradePlayer, Resources.downgrade, path + "downgrade.mp3");
+            SoundInit(padlockPlayer, Resources.padlock, path + "padlock.mp3");
+            SoundInit(chainPlayer, Resources.chain, path + "chain.mp3");
+            SoundInit(cancelPlayer, Resources.cancel, path + "cancel.mp3");
+            SoundInit(turnPlayer, Resources.turn, path + "turn.mp3");
+            SoundInit(successPlayer, Resources.success, path + "success.mp3");
+            SoundInit(musicPlayer, Resources.music, path + "music.mp3");
+            SoundInit(menuPlayer, Resources.menu, path + "menu.mp3");
+            SoundInit(victoryPlayer, Resources.victory, path + "victory.mp3");
+
+            menuPlayer.Volume = 1;
+            musicPlayer.Volume = 1;
+            victoryPlayer.Volume = 1;
 
             // Перемешивание колод Казны и Шанса
             int cards = 16;
@@ -6579,22 +6587,24 @@ namespace Monopoly
             // Ввод игроков
             menuPlayer.Play();
             Registration();
-            QueueDefinition();
-            menuPlayer.Stop();
 
             // Игра
             while (true)
             {
-                Console.Clear();
-                Console.SetCursorPosition(0, 0);
-                Console.Write("Загрузка...");
-                musicPlayer.PlayLooping();
+                QueueDefinition();
+                menuPlayer.Stop();
+                musicPlayer.Play();
                 PrintRoadmap();
                 PrintTitle();
                 while (remaining > 1)
                 {
                     for (int i = 0; i < playersCount && remaining > 1; i++)
                     {
+                        if (musicPlayer.Position == musicPlayer.NaturalDuration.TimeSpan)
+                        {
+                            musicPlayer.Position = TimeSpan.Zero;
+                            musicPlayer.Play();
+                        }
                         PrintPlayers(i);
                         repeat = true;
                         Menu(players[i], i, false);

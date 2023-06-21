@@ -61,137 +61,152 @@ namespace Monopoly.Properties {
         }
         
         /// <summary>
-        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream cancel {
+        internal static byte[] cancel {
             get {
-                return ResourceManager.GetStream("cancel", resourceCulture);
+                object obj = ResourceManager.GetObject("cancel", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream chain {
+        internal static byte[] chain {
             get {
-                return ResourceManager.GetStream("chain", resourceCulture);
+                object obj = ResourceManager.GetObject("chain", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream downgrade {
+        internal static byte[] downgrade {
             get {
-                return ResourceManager.GetStream("downgrade", resourceCulture);
+                object obj = ResourceManager.GetObject("downgrade", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream happy {
+        internal static byte[] happy {
             get {
-                return ResourceManager.GetStream("happy", resourceCulture);
+                object obj = ResourceManager.GetObject("happy", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream menu {
+        internal static byte[] menu {
             get {
-                return ResourceManager.GetStream("menu", resourceCulture);
+                object obj = ResourceManager.GetObject("menu", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream money {
+        internal static byte[] money {
             get {
-                return ResourceManager.GetStream("money", resourceCulture);
+                object obj = ResourceManager.GetObject("money", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream music {
+        internal static byte[] music {
             get {
-                return ResourceManager.GetStream("music", resourceCulture);
+                object obj = ResourceManager.GetObject("music", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream padlock {
+        internal static byte[] padlock {
             get {
-                return ResourceManager.GetStream("padlock", resourceCulture);
+                object obj = ResourceManager.GetObject("padlock", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream paper {
+        internal static byte[] paper {
             get {
-                return ResourceManager.GetStream("paper", resourceCulture);
+                object obj = ResourceManager.GetObject("paper", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream police {
+        internal static byte[] police {
             get {
-                return ResourceManager.GetStream("police", resourceCulture);
+                object obj = ResourceManager.GetObject("police", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream sad {
+        internal static byte[] sad {
             get {
-                return ResourceManager.GetStream("sad", resourceCulture);
+                object obj = ResourceManager.GetObject("sad", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream success {
+        internal static byte[] success {
             get {
-                return ResourceManager.GetStream("success", resourceCulture);
+                object obj = ResourceManager.GetObject("success", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream turn {
+        internal static byte[] turn {
             get {
-                return ResourceManager.GetStream("turn", resourceCulture);
+                object obj = ResourceManager.GetObject("turn", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream upgrade {
+        internal static byte[] upgrade {
             get {
-                return ResourceManager.GetStream("upgrade", resourceCulture);
+                object obj = ResourceManager.GetObject("upgrade", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream victory {
+        internal static byte[] victory {
             get {
-                return ResourceManager.GetStream("victory", resourceCulture);
+                object obj = ResourceManager.GetObject("victory", resourceCulture);
+                return ((byte[])(obj));
             }
         }
     }
