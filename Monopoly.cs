@@ -4890,7 +4890,7 @@ namespace Monopoly
                     if (player.Balance < 10) Console.ForegroundColor = ConsoleColor.Gray;
                     Console.Write("Пробел – Заплатить штраф 10$");
                     Console.ForegroundColor = ConsoleColor.Black;
-                    Console.Write("           Enter – Взять \"Шанс\" ║");
+                    Console.Write("             Enter – Взять \"Шанс\" ║");
                     Console.SetCursorPosition(165, 54);
                     if (musicMuted)
                     {
