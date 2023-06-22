@@ -4402,7 +4402,6 @@ namespace Monopoly
                     if (participant.IsBankrupt)
                     {
                         participant.CancelAuction();
-                        participants--;
                     }
                     if (participant.Cancelled) continue;
                     PrintPlayers(i);
@@ -4450,8 +4449,11 @@ namespace Monopoly
                                     bid++;
                                     spaces = 20 - participant.Name.Length;
                                     left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
-                                    Console.SetCursorPosition(69 + left, 30);
+                                    right = Convert.ToInt32(Math.Floor(spaces / 2.0));
+                                    Console.SetCursorPosition(70, 30);
+                                    for (int j = 0; j < left; j++) Console.Write(" ");
                                     Console.Write($"{participant.Name} {participant.Piece}");
+                                    for (int j = 0; j < right; j++) Console.Write(" ");
                                     Console.SetCursorPosition(69, 31);
                                     Console.Write("║ Ставка: ");
                                     for (int j = 0; j < 11 - Convert.ToString(bid).Length; j++) Console.Write(" ");
@@ -4706,6 +4708,7 @@ namespace Monopoly
             {
                 SpendLiberation(debtor);
             }
+            doubles = 0;
         }
 
         static Quartal Treasury(Player player, int turn)
@@ -6609,11 +6612,13 @@ namespace Monopoly
                     case ConsoleKey.D1:
                         victoryPlayer.Stop();
                         menuPlayer.Play();
+                        Console.Clear();
                         return true;
                     case ConsoleKey.NumPad2:
                     case ConsoleKey.D2:
                         victoryPlayer.Stop();
                         menuPlayer.Play();
+                        Console.Clear();
                         return false;
                 }
             }
