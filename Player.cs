@@ -187,39 +187,43 @@ namespace Monopoly
         public List<Quartal> Bankrupt(Player player)
         {
             isBankrupt = true;
-            List<Quartal> prprt = property;
-            foreach (var quartal in prprt)
+            List<Quartal> bankruptProperty = new List<Quartal>();
+            foreach (Quartal quartal in property)
             {
+                bankruptProperty.Add(quartal);
                 for (int i = quartal.Level; i > 0; i--)
                 {
                     quartal.Downgrade();
                 }
             }
 
+            for (int i = 0; i < Liberation; i++) player.GetLiberation();
+
             if (player == null)
             {
-                foreach (var quartal in prprt)
+                while (property.Count > 0)
                 {
+                    Quartal quartal = property[0];
                     if (quartal.IsMantaged)
                     {
-                        player.Receive(quartal.Pledge + quartal.Pledge / 10);
+                        this.Receive(quartal.Pledge + quartal.Pledge / 10);
                         quartal.Redeem();
                     }
                     quartal.SetOwner(null);
                 }
-                prprt = null;
             }
             else
             {
                 player.Receive(balance);
-                foreach (var quartal in prprt)
+                while (property.Count > 0)
                 {
+                    Quartal quartal = property[0];
                     quartal.SetOwner(player);
                 }
             }
             balance = 0;
             position = -1;
-            return prprt;
+            return bankruptProperty;
         }
 
         public void GetLiberation()

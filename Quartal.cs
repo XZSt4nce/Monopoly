@@ -149,7 +149,20 @@ namespace Monopoly
 
         public void SetOwner(Player player)
         {
-            if (player == null) owner = player;
+            if (player == null)
+            {
+                owner.DecreaseColor(this);
+                owner.RemoveProperty(this);
+                owner = null;
+                isMonopoly = false;
+                if (colorGroup != null)
+                {
+                    foreach (Quartal quartal in colorGroup)
+                    {
+                        quartal.isMonopoly = false;
+                    }
+                }
+            }
             else
             {
                 if (owner == null)
