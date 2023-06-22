@@ -3464,10 +3464,6 @@ namespace Monopoly
             ClearMenu();
             dice1 = rnd.Next(1, 7);
             dice2 = rnd.Next(1, 7);
-            if (player == players[1])
-            {
-                dice1 = 1;dice2 = 3;
-            }
             if (player.IsPrisoned)
             {
                 if (dice1 != dice2)
