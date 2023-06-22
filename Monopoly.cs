@@ -1,6 +1,7 @@
 ﻿using Monopoly.Properties;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -891,182 +892,44 @@ namespace Monopoly
         static void PrintPieces(int oldPosition, int newPosition, Player player)
         {
             int oldVisitors = quartals[oldPosition].Visitors - 1;
-            int newVisitors = quartals[newPosition].Visitors + 1;
-            int prisonedVisitors = players.Where(p => p.IsPrisoned).Count();
             int oldPiecesPtr = 0;
-            int newPiecesPtr = 1;
-            int prisonerPiecesPtr = 0;
             char[] oldPieces = new char[oldVisitors];
-            char[] newPieces = new char[newVisitors];
+            int prisonedVisitors = players.Where(p => p.IsPrisoned).Count();
+            int prisonerPiecesPtr = 0;
             char[] prisonerPieces = new char[prisonedVisitors];
-            if (!player.IsPrisoned) newPieces[0] = player.Piece;
-            for (int i = 0; i < playersCount; i++)
+            if (newPosition == -1)
             {
-                if (players[i].IsPrisoned) prisonerPieces[prisonerPiecesPtr++] = players[i].Piece;
-                else
+                for (int i = 0; i < playersCount; i++)
                 {
                     if (players[i].Position == oldPosition && players[i] != player) oldPieces[oldPiecesPtr++] = players[i].Piece;
-                    if (players[i].Position == newPosition) newPieces[newPiecesPtr++] = players[i].Piece;
+                    if (players[i].IsPrisoned && players[i] != player) prisonerPieces[prisonerPiecesPtr++] = players[i].Piece;
                 }
-            }
 
-            int column, row;
-            if (oldPosition <= 10)
-            {
-                if (oldPosition == 0)
+                int column, row;
+                if (oldPosition <= 10)
                 {
-                    row = 3;
-                    Console.BackgroundColor = ConsoleColor.DarkMagenta;
-                    for (int i = 0; i <= oldVisitors; i++)
-                    {
-                        column = 7 + i;
-                        Console.SetCursorPosition(column, row);
-                        Console.Write(" ");
-                    }
-                    for (int i = 0; i < oldVisitors; i++)
-                    {
-                        column = 7 + i;
-                        Console.SetCursorPosition(column, row);
-                        Console.Write(oldPieces[i]);
-                    }
-                }
-                else if (oldPosition == 10)
-                {
-                    row = 5;
-                    Console.BackgroundColor = ConsoleColor.DarkGray;
-                    for (int i = 0; i < 8; i++)
-                    {
-                        column = 147 + i;
-                        Console.SetCursorPosition(column, row);
-                        Console.Write(" ");
-                    }
-                    for (int i = 0; i < prisonedVisitors; i++)
-                    {
-                        column = 147 + i;
-                        Console.SetCursorPosition(column, row);
-                        Console.Write(prisonerPieces[i]);
-                    }
-                    row = 3;
-                    Console.BackgroundColor = ConsoleColor.DarkMagenta;
-                    for (int i = 0; i <= oldVisitors; i++)
-                    {
-                        column = 147 + i;
-                        Console.SetCursorPosition(column, row);
-                        Console.Write(" ");
-                    }
-                    for (int i = 0; i < oldVisitors; i++)
-                    {
-                        column = 147 + i;
-                        Console.SetCursorPosition(column, row);
-                        Console.Write(oldPieces[i]);
-                    }
-                }
-                else
-                {
-                    row = 0;
-                    for (int i = 0; i <= oldVisitors; i++)
-                    {
-                        column = 7 + i + 14 * oldPosition;
-                        Console.SetCursorPosition(column, row);
-                        Console.Write(" ");
-                    }
-                    for (int i = 0; i < oldVisitors; i++)
-                    {
-                        column = 7 + i + 14 * oldPosition;
-                        Console.SetCursorPosition(column, row);
-                        Console.Write(oldPieces[i]);
-                    }
-                }
-                Console.BackgroundColor = ConsoleColor.White;
-            }
-            else if (oldPosition < 20)
-            {
-                for (int i = 0; i <= oldVisitors; i++)
-                {
-                    column = 158 + i / 4;
-                    row = 7 + (oldPosition - 11) * 5 - 3 * (i / 4) + i;
-                    Console.SetCursorPosition(column, row);
-                    Console.Write(" ");
-                }
-                for (int i = 0; i < oldVisitors; i++)
-                {
-                    column = 158 + i / 4;
-                    row = 7 + (oldPosition - 11) * 5 - 3 * (i / 4) + i;
-                    Console.SetCursorPosition(column, row);
-                    Console.Write(oldPieces[i]);
-                }
-            }
-            else if (oldPosition <= 30)
-            {
-                if (oldPosition == 20)
-                {
-                    row = 53;
-                    Console.BackgroundColor = ConsoleColor.Cyan;
-                }
-                else if (oldPosition == 30)
-                {
-                    row = 52;
-                    Console.BackgroundColor = ConsoleColor.DarkGray;
-                }
-                else row = 57;
-                for (int i = 0; i <= oldVisitors; i++)
-                {
-                    column = 147 + i - 14 * (oldPosition - 20);
-                    Console.SetCursorPosition(column, row);
-                    Console.Write(" ");
-                }
-                for (int i = 0; i < oldVisitors; i++)
-                {
-                    column = 147 + i - 14 * (oldPosition - 20);
-                    Console.SetCursorPosition(column, row);
-                    Console.Write(oldPieces[i]);
-                }
-                Console.BackgroundColor = ConsoleColor.White;
-            }
-            else
-            {
-                for (int i = 0; i <= oldVisitors; i++)
-                {
-                    column = 1 - i / 4;
-                    row = 47 - (oldPosition - 31) * 5 - 3 * (i / 4) + i;
-                    Console.SetCursorPosition(column, row);
-                    Console.Write(" ");
-                }
-                for (int i = 0; i < oldVisitors; i++)
-                {
-                    column = 1 - i / 4;
-                    row = 47 - (oldPosition - 31) * 5 - 3 * (i / 4) + i;
-                    Console.SetCursorPosition(column, row);
-                    Console.Write(oldPieces[i]);
-                }
-            }
-
-            if (newPosition != -1)
-            {
-                if (newPosition <= 10)
-                {
-                    if (newPosition == 0)
+                    if (oldPosition == 0)
                     {
                         row = 3;
                         Console.BackgroundColor = ConsoleColor.DarkMagenta;
-                        for (int i = 0; i < newVisitors; i++)
+                        for (int i = 0; i <= oldVisitors; i++)
                         {
-                            column = 7 + i + 14 * newPosition;
+                            column = 7 + i;
                             Console.SetCursorPosition(column, row);
                             Console.Write(" ");
                         }
-                        for (int i = 0; i < newVisitors; i++)
+                        for (int i = 0; i < oldVisitors; i++)
                         {
-                            column = 7 + i + 14 * newPosition;
+                            column = 7 + i;
                             Console.SetCursorPosition(column, row);
-                            Console.Write(newPieces[i]);
+                            Console.Write(oldPieces[i]);
                         }
                     }
-                    else if (newPosition == 10)
+                    else if (oldPosition == 10)
                     {
                         row = 5;
                         Console.BackgroundColor = ConsoleColor.DarkGray;
-                        for (int i = 0; i < prisonedVisitors; i++)
+                        for (int i = 0; i < 8; i++)
                         {
                             column = 147 + i;
                             Console.SetCursorPosition(column, row);
@@ -1080,101 +943,381 @@ namespace Monopoly
                         }
                         row = 3;
                         Console.BackgroundColor = ConsoleColor.DarkMagenta;
-                        for (int i = 0; i < newVisitors; i++)
+                        for (int i = 0; i <= oldVisitors; i++)
                         {
                             column = 147 + i;
                             Console.SetCursorPosition(column, row);
                             Console.Write(" ");
                         }
-                        for (int i = 0; i < newVisitors; i++)
+                        for (int i = 0; i < oldVisitors; i++)
                         {
                             column = 147 + i;
                             Console.SetCursorPosition(column, row);
-                            Console.Write(newPieces[i]);
+                            Console.Write(oldPieces[i]);
                         }
                     }
                     else
                     {
                         row = 0;
-                        for (int i = 0; i < newVisitors; i++)
+                        for (int i = 0; i <= oldVisitors; i++)
                         {
-                            column = 7 + i + 14 * newPosition;
+                            column = 7 + i + 14 * oldPosition;
                             Console.SetCursorPosition(column, row);
                             Console.Write(" ");
                         }
-                        for (int i = 0; i < newVisitors; i++)
+                        for (int i = 0; i < oldVisitors; i++)
                         {
-                            column = 7 + i + 14 * newPosition;
+                            column = 7 + i + 14 * oldPosition;
                             Console.SetCursorPosition(column, row);
-                            Console.Write(newPieces[i]);
+                            Console.Write(oldPieces[i]);
                         }
                     }
                     Console.BackgroundColor = ConsoleColor.White;
                 }
-                else if (newPosition < 20)
+                else if (oldPosition < 20)
                 {
-                    for (int i = 0; i < newVisitors; i++)
+                    for (int i = 0; i <= oldVisitors; i++)
                     {
                         column = 158 + i / 4;
-                        row = 7 + (newPosition - 11) * 5 - 3 * (i / 4) + i;
+                        row = 7 + (oldPosition - 11) * 5 - 3 * (i / 4) + i;
                         Console.SetCursorPosition(column, row);
                         Console.Write(" ");
                     }
-                    for (int i = 0; i < newVisitors; i++)
+                    for (int i = 0; i < oldVisitors; i++)
                     {
                         column = 158 + i / 4;
-                        row = 7 + (newPosition - 11) * 5 - 3 * (i / 4) + i;
+                        row = 7 + (oldPosition - 11) * 5 - 3 * (i / 4) + i;
                         Console.SetCursorPosition(column, row);
-                        Console.Write(newPieces[i]);
+                        Console.Write(oldPieces[i]);
                     }
                 }
-                else if (newPosition <= 30)
+                else if (oldPosition <= 30)
                 {
-                    if (newPosition == 20)
+                    if (oldPosition == 20)
                     {
                         row = 53;
                         Console.BackgroundColor = ConsoleColor.Cyan;
                     }
-                    else if (newPosition == 30)
+                    else if (oldPosition == 30)
                     {
                         row = 52;
                         Console.BackgroundColor = ConsoleColor.DarkGray;
                     }
                     else row = 57;
-                    for (int i = 0; i < newVisitors; i++)
+                    for (int i = 0; i <= oldVisitors; i++)
                     {
-                        column = 147 + i - 14 * (newPosition - 20);
+                        column = 147 + i - 14 * (oldPosition - 20);
                         Console.SetCursorPosition(column, row);
                         Console.Write(" ");
                     }
-                    for (int i = 0; i < newVisitors; i++)
+                    for (int i = 0; i < oldVisitors; i++)
                     {
-                        column = 147 + i - 14 * (newPosition - 20);
+                        column = 147 + i - 14 * (oldPosition - 20);
                         Console.SetCursorPosition(column, row);
-                        Console.Write(newPieces[i]);
+                        Console.Write(oldPieces[i]);
                     }
                     Console.BackgroundColor = ConsoleColor.White;
                 }
                 else
                 {
-                    for (int i = 0; i < newVisitors; i++)
+                    for (int i = 0; i <= oldVisitors; i++)
                     {
                         column = 1 - i / 4;
-                        row = 47 - (newPosition - 31) * 5 - 3 * (i / 4) + i;
+                        row = 47 - (oldPosition - 31) * 5 - 3 * (i / 4) + i;
                         Console.SetCursorPosition(column, row);
                         Console.Write(" ");
                     }
-                    for (int i = 0; i < newVisitors; i++)
+                    for (int i = 0; i < oldVisitors; i++)
                     {
                         column = 1 - i / 4;
-                        row = 47 - (newPosition - 31) * 5 - 3 * (i / 4) + i;
+                        row = 47 - (oldPosition - 31) * 5 - 3 * (i / 4) + i;
                         Console.SetCursorPosition(column, row);
-                        Console.Write(newPieces[i]);
+                        Console.Write(oldPieces[i]);
                     }
                 }
             }
-            player.Move(newPosition);
-            quartals[newPosition].IncreaseVisitors();
+            else
+            {
+                int newVisitors = quartals[newPosition].Visitors + 1;
+                int newPiecesPtr = 1;
+                char[] newPieces = new char[newVisitors];
+                if (!player.IsPrisoned) newPieces[0] = player.Piece;
+                for (int i = 0; i < playersCount; i++)
+                {
+                    if (players[i].IsPrisoned) prisonerPieces[prisonerPiecesPtr++] = players[i].Piece;
+                    else
+                    {
+                        if (players[i].Position == oldPosition && players[i] != player) oldPieces[oldPiecesPtr++] = players[i].Piece;
+                        if (players[i].Position == newPosition) newPieces[newPiecesPtr++] = players[i].Piece;
+                    }
+                }
+
+                int column, row;
+                if (oldPosition <= 10)
+                {
+                    if (oldPosition == 0)
+                    {
+                        row = 3;
+                        Console.BackgroundColor = ConsoleColor.DarkMagenta;
+                        for (int i = 0; i <= oldVisitors; i++)
+                        {
+                            column = 7 + i;
+                            Console.SetCursorPosition(column, row);
+                            Console.Write(" ");
+                        }
+                        for (int i = 0; i < oldVisitors; i++)
+                        {
+                            column = 7 + i;
+                            Console.SetCursorPosition(column, row);
+                            Console.Write(oldPieces[i]);
+                        }
+                    }
+                    else if (oldPosition == 10)
+                    {
+                        row = 5;
+                        Console.BackgroundColor = ConsoleColor.DarkGray;
+                        for (int i = 0; i < 8; i++)
+                        {
+                            column = 147 + i;
+                            Console.SetCursorPosition(column, row);
+                            Console.Write(" ");
+                        }
+                        for (int i = 0; i < prisonedVisitors; i++)
+                        {
+                            column = 147 + i;
+                            Console.SetCursorPosition(column, row);
+                            Console.Write(prisonerPieces[i]);
+                        }
+                        row = 3;
+                        Console.BackgroundColor = ConsoleColor.DarkMagenta;
+                        for (int i = 0; i <= oldVisitors; i++)
+                        {
+                            column = 147 + i;
+                            Console.SetCursorPosition(column, row);
+                            Console.Write(" ");
+                        }
+                        for (int i = 0; i < oldVisitors; i++)
+                        {
+                            column = 147 + i;
+                            Console.SetCursorPosition(column, row);
+                            Console.Write(oldPieces[i]);
+                        }
+                    }
+                    else
+                    {
+                        row = 0;
+                        for (int i = 0; i <= oldVisitors; i++)
+                        {
+                            column = 7 + i + 14 * oldPosition;
+                            Console.SetCursorPosition(column, row);
+                            Console.Write(" ");
+                        }
+                        for (int i = 0; i < oldVisitors; i++)
+                        {
+                            column = 7 + i + 14 * oldPosition;
+                            Console.SetCursorPosition(column, row);
+                            Console.Write(oldPieces[i]);
+                        }
+                    }
+                    Console.BackgroundColor = ConsoleColor.White;
+                }
+                else if (oldPosition < 20)
+                {
+                    for (int i = 0; i <= oldVisitors; i++)
+                    {
+                        column = 158 + i / 4;
+                        row = 7 + (oldPosition - 11) * 5 - 3 * (i / 4) + i;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(" ");
+                    }
+                    for (int i = 0; i < oldVisitors; i++)
+                    {
+                        column = 158 + i / 4;
+                        row = 7 + (oldPosition - 11) * 5 - 3 * (i / 4) + i;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(oldPieces[i]);
+                    }
+                }
+                else if (oldPosition <= 30)
+                {
+                    if (oldPosition == 20)
+                    {
+                        row = 53;
+                        Console.BackgroundColor = ConsoleColor.Cyan;
+                    }
+                    else if (oldPosition == 30)
+                    {
+                        row = 52;
+                        Console.BackgroundColor = ConsoleColor.DarkGray;
+                    }
+                    else row = 57;
+                    for (int i = 0; i <= oldVisitors; i++)
+                    {
+                        column = 147 + i - 14 * (oldPosition - 20);
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(" ");
+                    }
+                    for (int i = 0; i < oldVisitors; i++)
+                    {
+                        column = 147 + i - 14 * (oldPosition - 20);
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(oldPieces[i]);
+                    }
+                    Console.BackgroundColor = ConsoleColor.White;
+                }
+                else
+                {
+                    for (int i = 0; i <= oldVisitors; i++)
+                    {
+                        column = 1 - i / 4;
+                        row = 47 - (oldPosition - 31) * 5 - 3 * (i / 4) + i;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(" ");
+                    }
+                    for (int i = 0; i < oldVisitors; i++)
+                    {
+                        column = 1 - i / 4;
+                        row = 47 - (oldPosition - 31) * 5 - 3 * (i / 4) + i;
+                        Console.SetCursorPosition(column, row);
+                        Console.Write(oldPieces[i]);
+                    }
+                }
+
+                if (newPosition != -1)
+                {
+                    if (newPosition <= 10)
+                    {
+                        if (newPosition == 0)
+                        {
+                            row = 3;
+                            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+                            for (int i = 0; i < newVisitors; i++)
+                            {
+                                column = 7 + i + 14 * newPosition;
+                                Console.SetCursorPosition(column, row);
+                                Console.Write(" ");
+                            }
+                            for (int i = 0; i < newVisitors; i++)
+                            {
+                                column = 7 + i + 14 * newPosition;
+                                Console.SetCursorPosition(column, row);
+                                Console.Write(newPieces[i]);
+                            }
+                        }
+                        else if (newPosition == 10)
+                        {
+                            row = 5;
+                            Console.BackgroundColor = ConsoleColor.DarkGray;
+                            for (int i = 0; i < prisonedVisitors; i++)
+                            {
+                                column = 147 + i;
+                                Console.SetCursorPosition(column, row);
+                                Console.Write(" ");
+                            }
+                            for (int i = 0; i < prisonedVisitors; i++)
+                            {
+                                column = 147 + i;
+                                Console.SetCursorPosition(column, row);
+                                Console.Write(prisonerPieces[i]);
+                            }
+                            row = 3;
+                            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+                            for (int i = 0; i < newVisitors; i++)
+                            {
+                                column = 147 + i;
+                                Console.SetCursorPosition(column, row);
+                                Console.Write(" ");
+                            }
+                            for (int i = 0; i < newVisitors; i++)
+                            {
+                                column = 147 + i;
+                                Console.SetCursorPosition(column, row);
+                                Console.Write(newPieces[i]);
+                            }
+                        }
+                        else
+                        {
+                            row = 0;
+                            for (int i = 0; i < newVisitors; i++)
+                            {
+                                column = 7 + i + 14 * newPosition;
+                                Console.SetCursorPosition(column, row);
+                                Console.Write(" ");
+                            }
+                            for (int i = 0; i < newVisitors; i++)
+                            {
+                                column = 7 + i + 14 * newPosition;
+                                Console.SetCursorPosition(column, row);
+                                Console.Write(newPieces[i]);
+                            }
+                        }
+                        Console.BackgroundColor = ConsoleColor.White;
+                    }
+                    else if (newPosition < 20)
+                    {
+                        for (int i = 0; i < newVisitors; i++)
+                        {
+                            column = 158 + i / 4;
+                            row = 7 + (newPosition - 11) * 5 - 3 * (i / 4) + i;
+                            Console.SetCursorPosition(column, row);
+                            Console.Write(" ");
+                        }
+                        for (int i = 0; i < newVisitors; i++)
+                        {
+                            column = 158 + i / 4;
+                            row = 7 + (newPosition - 11) * 5 - 3 * (i / 4) + i;
+                            Console.SetCursorPosition(column, row);
+                            Console.Write(newPieces[i]);
+                        }
+                    }
+                    else if (newPosition <= 30)
+                    {
+                        if (newPosition == 20)
+                        {
+                            row = 53;
+                            Console.BackgroundColor = ConsoleColor.Cyan;
+                        }
+                        else if (newPosition == 30)
+                        {
+                            row = 52;
+                            Console.BackgroundColor = ConsoleColor.DarkGray;
+                        }
+                        else row = 57;
+                        for (int i = 0; i < newVisitors; i++)
+                        {
+                            column = 147 + i - 14 * (newPosition - 20);
+                            Console.SetCursorPosition(column, row);
+                            Console.Write(" ");
+                        }
+                        for (int i = 0; i < newVisitors; i++)
+                        {
+                            column = 147 + i - 14 * (newPosition - 20);
+                            Console.SetCursorPosition(column, row);
+                            Console.Write(newPieces[i]);
+                        }
+                        Console.BackgroundColor = ConsoleColor.White;
+                    }
+                    else
+                    {
+                        for (int i = 0; i < newVisitors; i++)
+                        {
+                            column = 1 - i / 4;
+                            row = 47 - (newPosition - 31) * 5 - 3 * (i / 4) + i;
+                            Console.SetCursorPosition(column, row);
+                            Console.Write(" ");
+                        }
+                        for (int i = 0; i < newVisitors; i++)
+                        {
+                            column = 1 - i / 4;
+                            row = 47 - (newPosition - 31) * 5 - 3 * (i / 4) + i;
+                            Console.SetCursorPosition(column, row);
+                            Console.Write(newPieces[i]);
+                        }
+                    }
+                }
+                player.Move(newPosition);
+                quartals[newPosition].IncreaseVisitors();
+            }
             quartals[oldPosition].DecreaseVisitors();
         }
 
@@ -4541,24 +4684,26 @@ namespace Monopoly
             sadPlayer.Position = TimeSpan.Zero;
             sadPlayer.Play();
 
+            PrintPieces(debtor.Position, -1, debtor);
+            var property = debtor.Bankrupt(player);
+            if (property != null)
+            {
+                int playerIndex = Array.FindIndex(players, m => m == player);
+                foreach (Quartal p in property)
+                {
+                    if (p.IsMantaged) Redeem(p, playerIndex);
+                }
+            }
+
             remaining--;
             foreach (Player p in players)
             {
                 if (p.IsBankrupt) p.IncreasePlace();
             }
-            debtor.IncreasePlace();
 
             for (int i = 0; i < debtor.Liberation; i++)
             {
                 SpendLiberation(debtor);
-            }
-            var property = debtor.Bankrupt(player);
-            if (property != null)
-            {
-                foreach (Quartal p in property)
-                {
-                    if (p.IsMantaged) Redeem(p, Array.FindIndex(players, m => m == player));
-                }
             }
         }
 
