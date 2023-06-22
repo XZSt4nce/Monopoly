@@ -4355,7 +4355,7 @@ namespace Monopoly
         {
             int spaces, left, right;
             int bid = quartal.Cost;
-            int participants = players.Count();
+            int participants = players.Count(p => !p.IsBankrupt);
             Player participant = null;
             Console.SetCursorPosition(69, 26);
             Console.Write("╔══════════════════════╗");
