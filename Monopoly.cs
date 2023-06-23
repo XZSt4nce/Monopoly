@@ -4364,7 +4364,7 @@ namespace Monopoly
             left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
             right = Convert.ToInt32(Math.Floor(spaces / 2.0));
             Console.Write("║");
-            for (int j = 0; j < left; j++) Console.Write(" ");
+            for (int i = 0; i < left; i++) Console.Write(" ");
             if (quartal.Special == 6)
             {
                 Console.BackgroundColor = ConsoleColor.Black;
@@ -4375,7 +4375,7 @@ namespace Monopoly
             Console.Write(quartal.Name);
             Console.BackgroundColor = ConsoleColor.White;
             Console.ForegroundColor = ConsoleColor.Black;
-            for (int j = 0; j < right; j++) Console.Write(" ");
+            for (int i = 0; i < right; i++) Console.Write(" ");
             Console.Write("║");
             Console.SetCursorPosition(69, 28);
             Console.Write("╠══════════════════════╣");
@@ -4388,23 +4388,22 @@ namespace Monopoly
             Console.Write("║                      ║");
             Console.SetCursorPosition(69, 31);
             Console.Write("║ Ставка: ");
-            for (int j = 0; j < 11 - Convert.ToString(bid).Length; j++) Console.Write(" ");
+            for (int i = 0; i < 11 - Convert.ToString(bid).Length; i++) Console.Write(" ");
             Console.Write($"{bid}$ ║");
             Console.SetCursorPosition(69, 32);
             Console.Write("╚══════════════════════╝");
-            int i = turn;
             while (participants > 1)
             {
-                i = turn;
-                do
+                while (participants > 1)
                 {
-                    participant = players[i];
+                    participant = players[turn];
                     if (participant.IsBankrupt)
                     {
                         participant.CancelAuction();
+                        turn = (turn + 1) % playersCount;
                     }
                     if (participant.Cancelled) continue;
-                    PrintPlayers(i);
+                    PrintPlayers(turn);
                     Console.SetCursorPosition(165, 50);
                     Console.Write("╔═══════════════════════════════════════════════════════════════╗");
                     Console.SetCursorPosition(165, 51);
@@ -4451,12 +4450,12 @@ namespace Monopoly
                                     left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
                                     right = Convert.ToInt32(Math.Floor(spaces / 2.0));
                                     Console.SetCursorPosition(70, 30);
-                                    for (int j = 0; j < left; j++) Console.Write(" ");
+                                    for (int i = 0; i < left; i++) Console.Write(" ");
                                     Console.Write($"{participant.Name} {participant.Piece}");
-                                    for (int j = 0; j < right; j++) Console.Write(" ");
+                                    for (int i = 0; i < right; i++) Console.Write(" ");
                                     Console.SetCursorPosition(69, 31);
                                     Console.Write("║ Ставка: ");
-                                    for (int j = 0; j < 11 - Convert.ToString(bid).Length; j++) Console.Write(" ");
+                                    for (int i = 0; i < 11 - Convert.ToString(bid).Length; i++) Console.Write(" ");
                                     Console.Write($"{bid}$ ║");
                                     participant.DoBid();
                                     notChoosen = false;
@@ -4474,7 +4473,7 @@ namespace Monopoly
                                     Console.Write($"{participant.Name} {participant.Piece}");
                                     Console.SetCursorPosition(69, 31);
                                     Console.Write("║ Ставка: ");
-                                    for (int j = 0; j < 11 - Convert.ToString(bid).Length; j++) Console.Write(" ");
+                                    for (int i = 0; i < 11 - Convert.ToString(bid).Length; i++) Console.Write(" ");
                                     Console.Write($"{bid}$ ║");
                                     participant.DoBid();
                                     notChoosen = false;
@@ -4492,7 +4491,7 @@ namespace Monopoly
                                     Console.Write($"{participant.Name} {participant.Piece}");
                                     Console.SetCursorPosition(69, 31);
                                     Console.Write("║ Ставка: ");
-                                    for (int j = 0; j < 11 - Convert.ToString(bid).Length; j++) Console.Write(" ");
+                                    for (int i = 0; i < 11 - Convert.ToString(bid).Length; i++) Console.Write(" ");
                                     Console.Write($"{bid}$ ║");
                                     participant.DoBid();
                                     notChoosen = false;
@@ -4522,13 +4521,13 @@ namespace Monopoly
                                 break;
                         }
                     }
-                    i = (i + 1) % playersCount;
-                } while (i != turn && participants > 1);
+                    turn = (turn + 1) % playersCount;
+                }
             }
 
             foreach (Player p in players)
             {
-                if (!p.Cancelled)
+                if (!p.Cancelled && !p.IsBankrupt)
                 {
                     participant = p;
                     break;
@@ -4541,7 +4540,7 @@ namespace Monopoly
                 moneyPlayer.Play();
                 quartal.SetOwner(participant, bid);
                 PrintOwner(quartal);
-                PrintPlayers(i);
+                PrintPlayers(turn);
                 spaces = 54 - participant.Name.Length;
                 left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
                 right = Convert.ToInt32(Math.Floor(spaces / 2.0));
@@ -4554,16 +4553,16 @@ namespace Monopoly
                 Console.Write("╠═══════════════════════════════════════════════════════════════╣");
                 Console.SetCursorPosition(165, 52);
                 Console.Write("║");
-                for (i = 0; i < left; i++) Console.Write(" ");
+                for (int i = 0; i < left; i++) Console.Write(" ");
                 Console.Write($"Продано: {participant.Name}");
-                for (i = 0; i < right; i++) Console.Write(" ");
+                for (int i = 0; i < right; i++) Console.Write(" ");
                 Console.Write("║");
                 Console.SetCursorPosition(165, 53);
                 Console.Write("╚═══════════════════════════════════════════════════════════════╝");
             }
             else
             {
-                PrintPlayers(i);
+                PrintPlayers(turn);
                 ClearMenu();
                 Console.SetCursorPosition(165, 50);
                 Console.Write("╔═══════════════════════════════════════════════════════════════╗");
@@ -4602,7 +4601,7 @@ namespace Monopoly
                                 moneyPlayer.Play();
                                 quartal.SetOwner(participant, bid);
                                 PrintOwner(quartal);
-                                PrintPlayers(i);
+                                PrintPlayers(turn);
                                 spaces = 54 - participant.Name.Length;
                                 left = Convert.ToInt32(Math.Ceiling(spaces / 2.0));
                                 right = Convert.ToInt32(Math.Floor(spaces / 2.0));
@@ -4615,9 +4614,9 @@ namespace Monopoly
                                 Console.Write("╠═══════════════════════════════════════════════════════════════╣");
                                 Console.SetCursorPosition(165, 52);
                                 Console.Write("║");
-                                for (i = 0; i < left; i++) Console.Write(" ");
+                                for (int i = 0; i < left; i++) Console.Write(" ");
                                 Console.Write($"Продано: {participant.Name}");
-                                for (i = 0; i < right; i++) Console.Write(" ");
+                                for (int i = 0; i < right; i++) Console.Write(" ");
                                 Console.Write("║");
                                 Console.SetCursorPosition(165, 53);
                                 Console.Write("╚═══════════════════════════════════════════════════════════════╝");
@@ -4660,7 +4659,7 @@ namespace Monopoly
             }
             Thread.Sleep(1500);
 
-            for (i = 0; i < playersCount; i++)
+            for (int i = 0; i < playersCount; i++)
             {
                 players[i].EndAuction();
             }
@@ -6744,11 +6743,12 @@ namespace Monopoly
                 QueueDefinition();
                 menuPlayer.Stop();
                 musicPlayer.Play();
+                players[0].Bankrupt(null);
                 PrintRoadmap();
                 PrintTitle();
                 while (remaining > 1)
                 {
-                    for (int i = 0; i < playersCount && remaining > 1; i++)
+                    for (int i = 1; i < playersCount && remaining > 1; i++)
                     {
                         if (musicPlayer.Position == musicPlayer.NaturalDuration.TimeSpan)
                         {
