@@ -6742,11 +6742,12 @@ namespace Monopoly
                 QueueDefinition();
                 menuPlayer.Stop();
                 musicPlayer.Play();
+                players[0].Bankrupt(null);
                 PrintRoadmap();
                 PrintTitle();
                 while (remaining > 1)
                 {
-                    for (int i = 0; i < playersCount && remaining > 1; i++)
+                    for (int i = 1; i < playersCount && remaining > 1; i++)
                     {
                         if (musicPlayer.Position == musicPlayer.NaturalDuration.TimeSpan)
                         {
